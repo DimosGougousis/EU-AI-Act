@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Human Oversight Design — PulseCredit — Article 14</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html">★ EU AI Act | FinPulse NL</a>
+    <ul class="nav-links">
+      <li><a href="../index.html">Overview</a></li>
+      <li><a href="../02-ai-inventory.html">AI Inventory</a></li>
+      <li><a href="../03-gap-analysis.html">Gap Analysis</a></li>
+      <li><a href="../04-roadmap.html">Roadmap</a></li>
+      <li><a href="../05-agents.html">AI Agents</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="active">Artifacts</a>
+        <ul class="nav-dropdown-menu">
+          <li><a href="06-technical-doc.html">Technical Documentation</a></li>
+          <li><a href="07-risk-management.html">Risk Management System</a></li>
+          <li><a href="08-data-governance.html">Data Governance</a></li>
+          <li><a href="09-human-oversight.html">Human Oversight</a></li>
+          <li><a href="10-fria.html">Fundamental Rights (FRIA)</a></li>
+          <li><a href="11-conformity.html">Conformity Assessment</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <h1>Human Oversight Design</h1>
+    <p class="subtitle">PulseCredit v2.1 — Article 14, EU AI Act: Meaningful Human Control Over High-Risk AI</p>
+    <p class="meta">Artifact 09 | Version: 1.0-DRAFT | Oversight Owner: Head of Credit Operations</p>
+  </div>
+</div>
+<div class="breadcrumb"><a href="../index.html">Home</a> › <a href="#">Artifacts</a> › <span>Human Oversight Design</span></div>
+
+<div class="page-wrapper">
+
+  <div class="section">
+    <h2>1. Oversight Model Selection</h2>
+    <p>Article 14 requires that high-risk AI systems be designed to enable natural persons to effectively oversee the AI system's operation. FinPulse has selected a <strong>tiered Human-in-the-Loop (HITL) model</strong> with Human-in-Command (HIC) as the overarching governance principle.</p>
+    <div class="card-grid">
+      <div class="card card-accent">
+        <h3>Loans ≤ €5,000</h3>
+        <p><strong>HITL — Strategic</strong><br>AI makes automated decision. Decision is logged and subject to retrospective human audit (1% monthly sample review by Head of Credit Operations). Applicant notified of AI use.</p>
+      </div>
+      <div class="card card-accent">
+        <h3>Loans &gt; €5,000</h3>
+        <p><strong>HITL — Direct</strong><br>AI generates recommendation + SHAP explanation. Loan officer reviews and must actively confirm, modify, or override before decision is issued. Override requires reason code.</p>
+      </div>
+      <div class="card card-accent">
+        <h3>Thin-File Applicants</h3>
+        <p><strong>Human-in-Command</strong><br>Regardless of loan amount, thin-file applicants are always routed to a senior loan officer for full manual review. AI score displayed as advisory only.</p>
+      </div>
+      <div class="card card-accent">
+        <h3>System Unavailable</h3>
+        <p><strong>Human-in-Command</strong><br>If PulseCredit is unavailable, all applications are queued for manual review. No automated decisions during system downtime. SLA: manual review within 1 business day.</p>
+      </div>
+    </div>
+    <div class="alert alert-info">
+      <strong>Article 14(4) Requirement Met:</strong> The system is designed so that loan officers "are able to intervene" and "decide not to use" the AI output. The override mechanism ensures humans retain ultimate decision-making authority. FinPulse cannot reduce loan officers' authority to override by internal policy — this is a permanent system design requirement.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2. Loan Officer Dashboard Design</h2>
+    <p>The loan officer decision interface is designed to present AI outputs in a way that enables meaningful oversight — not passive confirmation. Key design principles: (1) AI recommendation is never pre-selected; (2) SHAP explanation must be reviewed (tracked via UI interaction analytics); (3) Override button is equally prominent as confirm button.</p>
+    <div class="card card-accent" style="background:#f8faff;padding:1.5rem;font-family:'Courier New',monospace;font-size:0.82rem;">
+      <h3 style="font-family:var(--font);">Dashboard Wireframe (Conceptual)</h3>
+      <pre style="margin:0;line-height:1.6;overflow-x:auto;">
+┌───────────────────────────────────────────────────────────────────┐
+│  PulseCredit Decision Review — Application #PC-2026-088234        │
+│  Applicant: J. de Groot | Loan: €8,500 / 36 months | 14:23       │
+├───────────────────────────────────────────────────────────────────┤
+│  AI RECOMMENDATION:     ┌─────────────────────┐                  │
+│                         │ ⚠ REFER  (Score: 34) │                  │
+│  Probability of default │ Medium risk — manual │                  │
+│  12-month: 28%          │ review required      │                  │
+│                         └─────────────────────┘                  │
+├───────────────────────────────────────────────────────────────────┤
+│  TOP FACTORS AFFECTING SCORE (SHAP):                              │
+│  ↑ Positive (reduces risk)   ↓ Negative (increases risk)          │
+│                                                                   │
+│  ▓▓▓▓▓▓▓░░░░░░ BKR score (high)        +18 pts                   │
+│  ▓▓▓▓░░░░░░░░░ Savings rate (12.3%)     +9 pts                   │
+│  ░░░░░░▒▒▒▒▒▒▒ NSF events (3 in 12mo) -14 pts                   │
+│  ░░░░░░░░▒▒▒▒▒ DTI ratio (0.41)        -11 pts                   │
+│  ░░░░░░░░░░▒▒▒ Employment months (4)    -6 pts                   │
+├───────────────────────────────────────────────────────────────────┤
+│  Your decision:    [✓ APPROVE]  [⚠ REFER]  [✗ DECLINE]           │
+│                                                                   │
+│  Override reason (required if changing AI recommendation):        │
+│  ┌───────────────────────────────────────────────────────────┐   │
+│  │ Select: [Supplementary income documented] [Life event...] │   │
+│  └───────────────────────────────────────────────────────────┘   │
+│                                                                   │
+│  ☑ I confirm I have reviewed the SHAP explanation above           │
+│                        [SUBMIT DECISION]                          │
+└───────────────────────────────────────────────────────────────────┘
+      </pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3. Override Mechanism &amp; Logging</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Element</th><th>Design</th></tr></thead>
+        <tbody>
+          <tr><td>Override authority</td><td>All loan officers have full authority to override. No approval needed from senior officer for override (removing friction that incentivises rubber-stamping).</td></tr>
+          <tr><td>Reason code requirement</td><td>Any decision differing from AI recommendation requires mandatory reason code selection + optional free text. Codes: [Supplementary income documented], [Life event explained], [Additional security provided], [AI output appears erroneous], [Regulatory / policy exception], [Other — manual].</td></tr>
+          <tr><td>Logging</td><td>All decisions logged: timestamp, application ID (pseudonymised), AI score, AI recommendation, loan officer decision, reason code, review duration. Retained 6+ months (aligned with Art. 12).</td></tr>
+          <tr><td>Override rate monitoring</td><td>Override rates reviewed monthly by Head of Credit Operations. Anomalies (e.g., individual officer override rate &gt;60% without documented reason) trigger supervision review.</td></tr>
+          <tr><td>Audit trail</td><td>Immutable audit log — loan officers cannot modify or delete decision records. Accessible to DNB/AFM on supervisory request.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4. AI Literacy Training Programme</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Module</th><th>Duration</th><th>Content</th><th>Assessment</th></tr></thead>
+        <tbody>
+          <tr><td>Module 1: How PulseCredit works</td><td>45 min</td><td>Model type, inputs, outputs, what the score means, confidence levels, known limitations</td><td>5-question quiz (80% pass threshold)</td></tr>
+          <tr><td>Module 2: Reading SHAP explanations</td><td>45 min</td><td>How to interpret SHAP feature contribution charts; what constitutes a meaningful override trigger</td><td>3 case studies with guided answers</td></tr>
+          <tr><td>Module 3: Human oversight responsibility</td><td>30 min</td><td>EU AI Act Article 14 requirements; FinPulse's human oversight policy; loan officer's legal accountability</td><td>Declaration of understanding (signed)</td></tr>
+          <tr><td>Module 4: Edge cases &amp; escalation</td><td>60 min</td><td>Thin-file applicants, life events, system unavailability, serious malfunction reporting</td><td>Role-play scenarios with supervisor assessment</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>Certification:</strong> 4-hour total (split over 2 half-days). Annual recertification (1-hour refresher). New hires complete training before accessing PulseCredit dashboard. Training records maintained in HR system (linked to AI compliance log).</p>
+    <p><strong>Target completion:</strong> 100% of loan officers by June 30, 2026.</p>
+  </div>
+
+  <div class="section">
+    <h2>5. Compliance with Article 14 Requirements</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Article 14 Requirement</th><th>Implementation</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Art. 14(1) — Enable oversight by natural persons</td><td>Loan officer dashboard with review, confirm, and override capabilities</td><td><span class="sev-high">In development (target: Jun 2026)</span></td></tr>
+          <tr><td>Art. 14(2) — Measures proportionate to risk</td><td>Tiered oversight model (automated for small loans, HITL for large, HIC for thin-file)</td><td><span class="sev-high">In development</span></td></tr>
+          <tr><td>Art. 14(3)(a) — Understand system capabilities and limitations</td><td>AI literacy training programme including limitations module</td><td><span class="sev-high">In development (target: Jun 2026)</span></td></tr>
+          <tr><td>Art. 14(3)(b) — Aware of automation bias risk</td><td>Training module on automation bias; override friction minimised</td><td><span class="sev-high">In development</span></td></tr>
+          <tr><td>Art. 14(3)(c) — Correctly interpret output</td><td>SHAP explanation display; mandatory SHAP review before confirmation</td><td><span class="sev-high">In development</span></td></tr>
+          <tr><td>Art. 14(3)(d) — Disregard, override, or pause</td><td>Override button always available; system paused if AI unavailable</td><td><span class="sev-high">In development</span></td></tr>
+          <tr><td>Art. 14(4) — Intervene and decide not to use</td><td>Override mechanism; no policy preventing disuse of AI recommendation</td><td><span class="sev-medium">✅ Designed</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div><h4>Artifact 09</h4><p>Human Oversight Design — PulseCredit v2.1<br>EU AI Act Article 14 | DRAFT</p></div>
+    <div><h4>Navigation</h4><ul>
+      <li><a href="../index.html">Overview</a></li>
+      <li><a href="08-data-governance.html">Data Governance</a></li>
+      <li><a href="10-fria.html">FRIA</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom">EU AI Act Assessment Portfolio — FinPulse NL B.V. — February 2026 — Hypothetical Exercise</div>
+</footer>
+</body>
+</html>

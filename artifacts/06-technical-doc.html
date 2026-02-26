@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Technical Documentation — PulseCredit v2.1 — Annex IV</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html">★ EU AI Act | FinPulse NL</a>
+    <ul class="nav-links">
+      <li><a href="../index.html">Overview</a></li>
+      <li><a href="../01-company-profile.html">Company</a></li>
+      <li><a href="../02-ai-inventory.html">AI Inventory</a></li>
+      <li><a href="../03-gap-analysis.html">Gap Analysis</a></li>
+      <li><a href="../04-roadmap.html">Roadmap</a></li>
+      <li><a href="../05-agents.html">AI Agents</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="active">Artifacts</a>
+        <ul class="nav-dropdown-menu">
+          <li><a href="06-technical-doc.html">Technical Documentation</a></li>
+          <li><a href="07-risk-management.html">Risk Management System</a></li>
+          <li><a href="08-data-governance.html">Data Governance</a></li>
+          <li><a href="09-human-oversight.html">Human Oversight</a></li>
+          <li><a href="10-fria.html">Fundamental Rights (FRIA)</a></li>
+          <li><a href="11-conformity.html">Conformity Assessment</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <h1>Technical Documentation</h1>
+    <p class="subtitle">PulseCredit v2.1 — Annex IV Technical File per EU AI Act Article 11</p>
+    <p class="meta">Artifact 06 | Document version: 1.0-DRAFT | Classification: HIGH-RISK (Annex III §5b) | Status: Draft — Awaiting sign-off</p>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <a href="../index.html">Home</a> › <a href="#">Artifacts</a> › <span>Technical Documentation</span>
+</div>
+
+<div class="page-wrapper">
+
+  <div class="alert alert-warn">
+    <strong>Document Status: DRAFT</strong>
+    This document is a working draft produced as part of the EU AI Act compliance programme. It requires review and sign-off by the CTO and Head of Data Science before being treated as the definitive Annex IV technical file.
+  </div>
+
+  <!-- 1. System Description -->
+  <div class="section">
+    <h2>1. General Description of the AI System</h2>
+
+    <h3>1.1 Intended Purpose</h3>
+    <p>PulseCredit v2.1 is an AI system deployed by FinPulse NL B.V. for the automated assessment of individual creditworthiness and generation of credit recommendations for consumer loan applications. The system evaluates natural persons applying for consumer loans ranging from €500 to €25,000 via the FinPulse mobile application.</p>
+    <p>The system is used solely within the context of FinPulse's authorised Consumer Credit Provider activities under the Wet op het financieel toezicht (Wft) in the Netherlands.</p>
+
+    <h3>1.2 Interaction with Other Systems</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>System</th><th>Type</th><th>Interaction</th></tr></thead>
+        <tbody>
+          <tr><td>BKR (Bureau Krediet Registratie)</td><td>External data source</td><td>API pull: credit history, existing obligations, payment defaults</td></tr>
+          <tr><td>PulseConnect PSD2 Feed</td><td>Internal system</td><td>Input: 12-month open banking transaction history (account categorisation)</td></tr>
+          <tr><td>Loan Origination System (LOS)</td><td>Internal system</td><td>Output: credit score + recommendation sent to LOS for processing</td></tr>
+          <tr><td>Loan Officer Dashboard</td><td>Internal UI</td><td>Human oversight interface displaying AI score + SHAP explanations</td></tr>
+          <tr><td>MLflow Registry</td><td>Internal MLOps</td><td>Model versioning, performance tracking, artefact storage</td></tr>
+          <tr><td>Audit Log Store</td><td>Internal</td><td>All inference events logged with model version, inputs (pseudonymised), output</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>1.3 Versions and Changes</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Version</th><th>Date</th><th>Change Description</th><th>Significant Change?</th></tr></thead>
+        <tbody>
+          <tr><td>1.0</td><td>Jan 2022</td><td>Initial deployment — Logistic Regression only</td><td>N/A (initial)</td></tr>
+          <tr><td>1.5</td><td>Jun 2023</td><td>Added BKR API integration; expanded feature set</td><td>Yes — new data source, re-training required</td></tr>
+          <tr><td>2.0</td><td>Jan 2025</td><td>Replaced LR with XGBoost ensemble; significant AUC improvement</td><td>Yes — new model architecture</td></tr>
+          <tr><td>2.1</td><td>Sep 2025</td><td>Bias remediation: postal code features removed; fairness constraints added to training</td><td>Yes — training procedure changed</td></tr>
+          <tr><td>2.1.1</td><td>Nov 2025</td><td>Calibration layer update (PSI monitoring triggered retraining)</td><td>No — minor calibration update</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 2. Model Architecture -->
+  <div class="section">
+    <h2>2. Model Architecture &amp; Training</h2>
+
+    <h3>2.1 Architecture</h3>
+    <p><strong>Model type:</strong> Two-stage ensemble — XGBoost gradient boosted decision tree (primary) with Logistic Regression calibration layer (secondary). Trained using supervised learning on historical loan application outcomes.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Component</th><th>Framework</th><th>Version</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>XGBoost Ensemble (primary)</td><td>XGBoost</td><td>1.7.6</td><td>Credit score generation (probability of default)</td></tr>
+          <tr><td>LR Calibration Layer</td><td>scikit-learn</td><td>1.4.0</td><td>Probability calibration (Platt scaling)</td></tr>
+          <tr><td>SHAP Explainer</td><td>SHAP</td><td>0.44.1</td><td>Feature attribution for human oversight interface</td></tr>
+          <tr><td>Fairness Monitor</td><td>Fairlearn</td><td>0.10.0</td><td>Post-prediction fairness metric computation</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>2.2 Training Procedure</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Training dataset size</td><td>380,000 labelled loan applications (2018–2024)</td></tr>
+          <tr><td>Train / Validation / Test split</td><td>70% / 15% / 15% (stratified by vintage year)</td></tr>
+          <tr><td>Hyperparameter optimisation</td><td>Optuna (Bayesian optimisation, 200 trials)</td></tr>
+          <tr><td>Cross-validation</td><td>5-fold time-series cross-validation (no data leakage across years)</td></tr>
+          <tr><td>Target variable</td><td>Default within 12 months (binary: 0/1)</td></tr>
+          <tr><td>Class imbalance handling</td><td>scale_pos_weight = 8 (8:1 non-default:default ratio)</td></tr>
+          <tr><td>Fairness constraint</td><td>Demographic parity constraint applied via Fairlearn reduction approach (exponentiated gradient)</td></tr>
+          <tr><td>Training environment</td><td>AWS SageMaker, eu-central-1 region (GDPR compliant)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>2.3 Feature List</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Feature</th><th>Source</th><th>Description</th><th>Type</th></tr></thead>
+        <tbody>
+          <tr><td>BKR_score_current</td><td>BKR API</td><td>Current BKR credit score</td><td>Numeric</td></tr>
+          <tr><td>BKR_defaults_last3yr</td><td>BKR API</td><td>Number of payment defaults in last 3 years</td><td>Integer</td></tr>
+          <tr><td>BKR_existing_obligations</td><td>BKR API</td><td>Total value of existing credit obligations (€)</td><td>Numeric</td></tr>
+          <tr><td>income_monthly_net</td><td>Application form</td><td>Self-declared monthly net income (€)</td><td>Numeric</td></tr>
+          <tr><td>employment_status</td><td>Application form</td><td>Employment status category (employed, self-employed, benefits, retired)</td><td>Categorical</td></tr>
+          <tr><td>employment_months</td><td>Application form</td><td>Months at current employer</td><td>Integer</td></tr>
+          <tr><td>dti_ratio</td><td>Computed</td><td>Debt-to-income ratio: (existing obligations + requested monthly repayment) / monthly income</td><td>Numeric</td></tr>
+          <tr><td>loan_amount_requested</td><td>Application form</td><td>Requested loan amount (€)</td><td>Numeric</td></tr>
+          <tr><td>loan_term_months</td><td>Application form</td><td>Requested loan term (months)</td><td>Integer</td></tr>
+          <tr><td>txn_monthly_income_avg</td><td>PSD2 feed</td><td>Average monthly income detected from transaction history (last 12mo)</td><td>Numeric</td></tr>
+          <tr><td>txn_monthly_spending_avg</td><td>PSD2 feed</td><td>Average monthly total spending (last 12mo)</td><td>Numeric</td></tr>
+          <tr><td>txn_savings_rate</td><td>PSD2 feed / Computed</td><td>Average monthly net savings as % of income</td><td>Numeric</td></tr>
+          <tr><td>txn_gambling_pct</td><td>PSD2 feed</td><td>Gambling transactions as % of total spend</td><td>Numeric</td></tr>
+          <tr><td>txn_nsf_count_12mo</td><td>PSD2 feed</td><td>Number of NSF (insufficient funds) events in last 12 months</td><td>Integer</td></tr>
+          <tr><td><s>postcode_district</s></td><td><s>Application</s></td><td><s>REMOVED in v2.1 — bias remediation</s></td><td><s>Categorical</s></td></tr>
+          <tr><td>applicant_age</td><td>Application form</td><td>Age at time of application. Used for legal lending eligibility only (18+ filter); not used as model feature.</td><td>Integer (filter only)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="alert alert-ok">
+      <strong>Note on Removed Feature:</strong> Postal district (postcode) was removed from v2.1 following bias audit findings indicating significant correlation with applicant ethnicity. This feature was present in v2.0 and its removal was a core bias remediation measure.
+    </div>
+  </div>
+
+  <!-- 3. Performance -->
+  <div class="section">
+    <h2>3. Performance Metrics &amp; Validation</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Metric</th><th>Training Set</th><th>Validation Set</th><th>Test Set</th><th>Threshold</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>AUC-ROC</td><td>0.821</td><td>0.804</td><td>0.799</td><td>≥ 0.78</td><td><span class="sev-medium">✅ PASS</span></td></tr>
+          <tr><td>GINI Coefficient</td><td>0.642</td><td>0.608</td><td>0.598</td><td>≥ 0.55</td><td><span class="sev-medium">✅ PASS</span></td></tr>
+          <tr><td>KS Statistic</td><td>0.451</td><td>0.423</td><td>0.411</td><td>≥ 0.38</td><td><span class="sev-medium">✅ PASS</span></td></tr>
+          <tr><td>Population Stability Index (PSI)</td><td>—</td><td>0.07</td><td>0.09</td><td>≤ 0.25</td><td><span class="sev-medium">✅ PASS</span></td></tr>
+          <tr><td>Calibration (Brier Score)</td><td>0.081</td><td>0.089</td><td>0.092</td><td>≤ 0.12</td><td><span class="sev-medium">✅ PASS</span></td></tr>
+          <tr><td>Demographic Parity Gap (Gender)</td><td>0.031</td><td>0.034</td><td>0.038</td><td>≤ 0.05</td><td><span class="sev-medium">✅ PASS</span></td></tr>
+          <tr><td>Demographic Parity Gap (Age bracket)</td><td>0.041</td><td>0.048</td><td>0.051</td><td>≤ 0.05</td><td><span class="sev-high">⚠️ BORDERLINE</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="alert alert-warn">
+      <strong>Borderline Metric — Age Demographic Parity:</strong> The test set demographic parity gap across age brackets (18–30 vs 55–65) is 0.051, marginally above the 0.05 threshold. This is flagged for monitoring. The BiasWatchAgent monitors this metric weekly in production. An age-group focused remediation review is scheduled for Q2 2026.
+    </div>
+
+    <h3>3.2 Known Limitations &amp; Failure Modes</h3>
+    <ul>
+      <li><strong>Thin-file applicants:</strong> Applicants with fewer than 6 months of BKR history and limited PSD2 transaction data receive less accurate scores. The model's Brier Score increases to 0.14 for this group (above threshold). These applicants are routed to the manual review path.</li>
+      <li><strong>Self-employed income volatility:</strong> Self-employed applicants with irregular monthly income patterns may be underscored relative to their actual repayment capacity. DTI ratio may overestimate risk in months with lower declared income.</li>
+      <li><strong>Recent life events:</strong> The model does not account for recent life events (job change, marriage, relocation) that occurred after the PSD2 data window. Loan officers are instructed to consider supplementary documentation in such cases.</li>
+      <li><strong>Model drift trigger:</strong> PSI &gt; 0.25 triggers automatic retraining review. Population shift detected and retraining initiated in Nov 2025 (v2.1.1).</li>
+    </ul>
+  </div>
+
+  <!-- 4. Instructions for Deployers -->
+  <div class="section">
+    <h2>4. Instructions for Deployers (Internal Use — FinPulse Loan Officers)</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Topic</th><th>Guidance</th></tr></thead>
+        <tbody>
+          <tr><td>Intended use</td><td>PulseCredit outputs are a decision support tool, not an autonomous decision-maker. Loan officers must apply professional judgment and are authorised to override the AI recommendation.</td></tr>
+          <tr><td>Interpreting the score</td><td>Score 0–100 represents probability of default × 100. Score &lt;20: low risk (Approve); 20–45: medium risk (Refer — human review required); &gt;45: high risk (Decline). Thresholds are configurable by credit policy team.</td></tr>
+          <tr><td>SHAP explanations</td><td>The top 5 feature contributions are displayed in the loan officer dashboard. Positive bars increase approval likelihood; negative bars increase decline likelihood. Officers must review SHAP output before confirming AI recommendation.</td></tr>
+          <tr><td>Override authority</td><td>Loan officers have full authority to override any AI recommendation. All overrides must be logged with a reason code. Override rates are reviewed monthly by the Head of Credit Operations.</td></tr>
+          <tr><td>Thin-file routing</td><td>Applicants flagged as "thin-file" are automatically routed to manual review regardless of AI score. Officers may request additional documentation (bank statements, employment contract).</td></tr>
+          <tr><td>Prohibited actions</td><td>Do not use PulseCredit outputs for any purpose other than consumer credit decisioning. Do not share scores externally. Do not attempt to reverse-engineer individual feature weights.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Sign-off -->
+  <div class="section">
+    <h2>5. Document Control</h2>
+    <div class="declaration-box">
+      <h3>Technical Documentation — Signature Block</h3>
+      <div class="sig-block">
+        <div class="sig-item"><label>Prepared By</label><span>Data Science Team, FinPulse NL B.V.</span></div>
+        <div class="sig-item"><label>Document Version</label><span>1.0-DRAFT</span></div>
+        <div class="sig-item"><label>Date</label><span>February 2026 (Target sign-off: May 31, 2026)</span></div>
+        <div class="sig-item"><label>CTO Sign-off</label><span>__ Dr. Elena Visser — PENDING __</span></div>
+        <div class="sig-item"><label>Head of Compliance</label><span>__ Marc de Vries — PENDING __</span></div>
+        <div class="sig-item"><label>Next Review</label><span>After any significant model change; annually otherwise</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div><h4>Artifact 06</h4><p>Technical Documentation — PulseCredit v2.1<br>Annex IV, EU AI Act Article 11 | DRAFT</p></div>
+    <div><h4>Navigation</h4><ul>
+      <li><a href="../index.html">Overview</a></li>
+      <li><a href="07-risk-management.html">Risk Management</a></li>
+      <li><a href="11-conformity.html">Conformity Assessment</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom">EU AI Act Assessment Portfolio — FinPulse NL B.V. — February 2026 — Hypothetical Exercise</div>
+</footer>
+</body>
+</html>

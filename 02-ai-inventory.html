@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Inventory & Risk Classification — FinPulse NL B.V.</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .rationale-box {
+      background: #f0f4fb;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--eu-blue);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1rem 1.25rem;
+      margin: 0.75rem 0;
+      font-size: 0.88rem;
+    }
+    .rationale-box .cite {
+      font-style: italic;
+      color: var(--eu-blue);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html">★ EU AI Act | FinPulse NL</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="01-company-profile.html">Company</a></li>
+      <li><a href="02-ai-inventory.html" class="active">AI Inventory</a></li>
+      <li><a href="03-gap-analysis.html">Gap Analysis</a></li>
+      <li><a href="04-roadmap.html">Roadmap</a></li>
+      <li><a href="05-agents.html">AI Agents</a></li>
+      <li class="nav-dropdown">
+        <a href="#">Artifacts</a>
+        <ul class="nav-dropdown-menu">
+          <li><a href="artifacts/06-technical-doc.html">Technical Documentation</a></li>
+          <li><a href="artifacts/07-risk-management.html">Risk Management System</a></li>
+          <li><a href="artifacts/08-data-governance.html">Data Governance</a></li>
+          <li><a href="artifacts/09-human-oversight.html">Human Oversight</a></li>
+          <li><a href="artifacts/10-fria.html">Fundamental Rights (FRIA)</a></li>
+          <li><a href="artifacts/11-conformity.html">Conformity Assessment</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <h1>AI Inventory &amp; Risk Classification</h1>
+    <p class="subtitle">Comprehensive inventory of all AI systems operated by FinPulse NL B.V. with risk-tier classification under EU AI Act Regulation (EU) 2024/1689.</p>
+    <p class="meta">EU AI Act Assessment | Section 02 | Classification Date: February 26, 2026</p>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <a href="index.html">Home</a> › <span>AI Inventory &amp; Risk Classification</span>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- Methodology -->
+  <div class="section">
+    <h2>Classification Methodology</h2>
+    <p>Risk classification follows the four-tier framework established by Regulation (EU) 2024/1689 (the EU AI Act). Each AI system operated by FinPulse was assessed against:</p>
+    <ol>
+      <li><strong>Article 5</strong> — Prohibited AI practices (immediate disqualification if applicable)</li>
+      <li><strong>Annex III</strong> — Listed high-risk AI system categories (explicit enumeration)</li>
+      <li><strong>Recital 58 &amp; Annex III footnotes</strong> — Specific exemptions (fraud detection carve-out)</li>
+      <li><strong>Article 50</strong> — Limited-risk transparency obligations (chatbots, synthetic content)</li>
+      <li>Residual category — Minimal-risk, no specific AI Act obligations</li>
+    </ol>
+    <div class="alert alert-info">
+      <strong>Key Principle — Profiling Escalation</strong>
+      An AI system that otherwise falls outside Annex III may be re-classified as high-risk if it profiles individuals based on behaviour, economic situation, or personal characteristics to make or substantially influence decisions in an Annex III context. This principle was applied to PulseConnect.
+    </div>
+  </div>
+
+  <!-- Full Inventory Table -->
+  <div class="section">
+    <h2>Full AI System Inventory</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>System</th>
+            <th>Purpose</th>
+            <th>Model Type</th>
+            <th>Key Inputs</th>
+            <th>Decision Output</th>
+            <th>Affected Users</th>
+            <th>Risk Tier</th>
+            <th>Actor Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>PulseCredit</strong></td>
+            <td>Credit scoring &amp; consumer loan origination</td>
+            <td>XGBoost ensemble + Logistic Regression calibration</td>
+            <td>Application data, BKR credit history, PSD2 transaction feed, income</td>
+            <td>Probability-of-default score; Approve/Refer/Decline recommendation</td>
+            <td>~18,000 applicants/yr</td>
+            <td><span class="badge badge-high">HIGH-RISK</span></td>
+            <td><span class="badge badge-provider">Provider</span></td>
+          </tr>
+          <tr>
+            <td><strong>PulseConnect</strong></td>
+            <td>Open banking PFM + financial health score + credit eligibility nudges</td>
+            <td>Neural network (CreditIQ SaaS, third-party)</td>
+            <td>Bank transaction history (24mo), account balances, spending patterns, income detection</td>
+            <td>Financial Health Score (0–850) + credit eligibility recommendation</td>
+            <td>~95,000 active users/mo</td>
+            <td><span class="badge badge-high">HIGH-RISK</span></td>
+            <td><span class="badge badge-deployer">Deployer</span></td>
+          </tr>
+          <tr>
+            <td><strong>PulseGuard</strong></td>
+            <td>Real-time payment fraud detection &amp; AML transaction monitoring</td>
+            <td>Graph neural network + rule engine (FraudSense EU SaaS)</td>
+            <td>Transaction data (amount, merchant, velocity), device fingerprint, network graph</td>
+            <td>Fraud risk score (0–100) + alert flag (L/M/H) for compliance review</td>
+            <td>~140,000 users (all payments)</td>
+            <td><span class="badge badge-exempt">EXEMPT (Fraud)</span></td>
+            <td><span class="badge badge-deployer">Deployer</span></td>
+          </tr>
+          <tr>
+            <td><strong>PulseBot</strong></td>
+            <td>Customer service AI chatbot — queries, FAQs, account status, escalation</td>
+            <td>Fine-tuned LLM + RAG over FinPulse knowledge base</td>
+            <td>User text messages, account context (with consent)</td>
+            <td>Natural language responses; no financial decisions</td>
+            <td>~65,000 monthly active users</td>
+            <td><span class="badge badge-limited">LIMITED-RISK</span></td>
+            <td><span class="badge badge-provider">Provider</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Classification Rationale per System -->
+  <div class="section">
+    <h2>Classification Rationale</h2>
+
+    <!-- PulseCredit -->
+    <div class="card card-accent" style="margin-bottom:1.5rem;">
+      <h3 style="margin-top:0;">PulseCredit — <span class="badge badge-high">HIGH-RISK</span></h3>
+      <div class="rationale-box">
+        <p><span class="cite">EU AI Act Annex III, Point 5(b):</span> "AI systems intended to be used for the purpose of evaluating the creditworthiness of natural persons or establishing their credit score, with the exception of AI systems used for the purpose of detecting financial fraud."</p>
+      </div>
+      <p><strong>Analysis:</strong> PulseCredit is explicitly listed in Annex III. It evaluates the creditworthiness of natural persons (Dutch consumers) and generates a credit score that directly informs loan origination decisions. The system is used by FinPulse in its capacity as a Consumer Credit Provider (Wft licence).</p>
+      <p><strong>Exemption check:</strong> PulseCredit is not a fraud detection system — it performs creditworthiness evaluation. The Recital 58 fraud exemption does not apply. The system falls squarely within Annex III §5(b).</p>
+      <p><strong>Article 6 check:</strong> The system is used in the context of regulated financial services and makes or substantially influences decisions with legal or similarly significant effects on natural persons (credit approval/rejection). Article 6(2) confirms high-risk classification for Annex III listed systems used in such contexts.</p>
+      <p><strong>Conclusion:</strong> <span class="badge badge-high">HIGH-RISK</span> — Full Article 16 provider obligations apply. Conformity assessment required by August 2, 2026.</p>
+    </div>
+
+    <!-- PulseConnect -->
+    <div class="card card-accent" style="margin-bottom:1.5rem;">
+      <h3 style="margin-top:0;">PulseConnect — <span class="badge badge-high">HIGH-RISK</span></h3>
+      <div class="rationale-box">
+        <p><span class="cite">EU AI Act Annex III, Point 5(b) + Article 6(2) + Recital 47:</span> AI systems that profile individuals' economic situation, behaviour, or personal characteristics to inform decisions relating to credit access fall within the high-risk category, even when not directly issuing a credit decision themselves.</p>
+      </div>
+      <p><strong>Analysis:</strong> PulseConnect's Financial Health Score is not, on its face, a credit decision — it is presented as a personalised financial insight. However, substantive analysis reveals that:</p>
+      <ul>
+        <li>The score directly measures creditworthiness-relevant attributes (income stability, spending patterns, debt levels)</li>
+        <li>The "credit eligibility nudge" feature explicitly recommends specific credit products based on the score</li>
+        <li>Users who receive a positive nudge are statistically 4x more likely to apply for PulseCredit products</li>
+        <li>The system profiles individual economic behaviour continuously on 95,000+ users monthly</li>
+      </ul>
+      <p><strong>Boundary analysis — creditworthiness vs. financial wellness:</strong> The EU AI Act does not require a system to <em>make</em> a credit decision to be classified as high-risk under Annex III §5(b). A system that <em>evaluates creditworthiness</em> as part of its core function — even to produce a score or recommendation — falls within scope. PulseConnect's core output (Financial Health Score + credit eligibility) is functionally a creditworthiness evaluation.</p>
+      <p><strong>Deployer note:</strong> FinPulse is the deployer — CreditIQ B.V. (the provider) bears primary compliance responsibility for the model. However, FinPulse must fulfil full Article 26 deployer obligations, including conducting a FRIA and ensuring end-users are notified of AI use in the eligibility assessment context.</p>
+      <p><strong>Conclusion:</strong> <span class="badge badge-high">HIGH-RISK</span> — Article 26 deployer obligations apply. FinPulse must confirm CreditIQ B.V.'s provider compliance and implement deployer measures by August 2, 2026.</p>
+    </div>
+
+    <!-- PulseGuard -->
+    <div class="card" style="margin-bottom:1.5rem;border-left:4px solid #10b981;">
+      <h3 style="margin-top:0;">PulseGuard — <span class="badge badge-exempt">EXEMPT from High-Risk</span></h3>
+      <div class="rationale-box">
+        <p><span class="cite">EU AI Act Recital 58:</span> "AI systems used for the sole purpose of preventing, investigating, detecting or prosecuting criminal offences, or of executing criminal penalties, including safeguarding against and preventing threats to public security, should not be considered high-risk AI systems... Furthermore, AI systems used by financial institutions for the purposes of detecting financial fraud should not be considered high-risk AI systems."</p>
+      </div>
+      <p><strong>Analysis:</strong> PulseGuard is operated exclusively for the purpose of detecting payment fraud and AML-suspicious transactions. Its outputs (risk scores and alerts) are used solely to flag potential fraud for human compliance review — not for any credit, eligibility, or commercial decisions. It fits squarely within the Recital 58 fraud detection exemption.</p>
+      <p><strong>Important limitation:</strong> The exemption applies only when the system is used <em>for the sole purpose</em> of fraud detection. If PulseGuard's outputs were repurposed — e.g., to inform PulseCredit's credit scoring or to profile customers for marketing — the exemption would be lost and the system would need re-classification. This risk must be monitored through data use governance controls.</p>
+      <p><strong>Applicable obligations:</strong></p>
+      <ul>
+        <li><strong>Article 50(1) — Transparency:</strong> End-users should be notified that AI is used to monitor their transactions (already disclosed in FinPulse's Terms &amp; Privacy Policy — confirmed compliant)</li>
+        <li>AML Directive (AMLD5/6), PSD2, and DNB AML supervisory requirements continue to apply in full</li>
+      </ul>
+      <p><strong>Conclusion:</strong> <span class="badge badge-exempt">EXEMPT from high-risk classification.</span> Article 50 transparency disclosure obligation applies and is currently met. No conformity assessment required.</p>
+    </div>
+
+    <!-- PulseBot -->
+    <div class="card" style="margin-bottom:1.5rem;border-left:4px solid #f59e0b;">
+      <h3 style="margin-top:0;">PulseBot — <span class="badge badge-limited">LIMITED-RISK</span></h3>
+      <div class="rationale-box">
+        <p><span class="cite">EU AI Act Article 50(1):</span> "Providers shall ensure that AI systems intended to interact directly with natural persons are designed and developed in such a way that the natural persons concerned are informed that they are interacting with an AI system, unless this is obvious from the circumstances and the context of use."</p>
+      </div>
+      <p><strong>Analysis:</strong> PulseBot is a conversational AI system (chatbot) that interacts directly with natural persons via the FinPulse app. It provides informational customer support and does not make financial decisions or assess creditworthiness.</p>
+      <p><strong>Annex III check:</strong> PulseBot does not fall within any Annex III category. It does not assess creditworthiness, determine eligibility for services, profile individuals for financial decisions, or perform any other listed high-risk function. It is an informational assistant only.</p>
+      <p><strong>Article 50 obligation:</strong> As a chatbot interacting with natural persons, PulseBot must disclose its AI nature at session start. FinPulse currently implements this via an automatic disclosure message: <em>"You are chatting with PulseBot, an AI assistant. Type 'agent' at any time to speak with a human."</em></p>
+      <p><strong>Conclusion:</strong> <span class="badge badge-limited">LIMITED-RISK</span> — Article 50(1) disclosure obligation only. Currently compliant. No conformity assessment required.</p>
+    </div>
+  </div>
+
+  <!-- Critical Boundary: Fraud vs. Credit -->
+  <div class="section">
+    <h2>Regulatory Boundary Analysis: Fraud Detection vs. Credit Risk</h2>
+    <div class="alert alert-warn">
+      <strong>This boundary is critical for FinPulse's compliance strategy.</strong>
+      PulseGuard's exempt status depends entirely on the system being used solely for fraud detection. Any data sharing or model integration between PulseGuard and PulseCredit would likely eliminate the exemption.
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Characteristic</th><th>Fraud Detection (EXEMPT)</th><th>Credit Risk (HIGH-RISK)</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Primary purpose</td>
+            <td>Detect and prevent fraudulent activity</td>
+            <td>Evaluate creditworthiness of an individual</td>
+          </tr>
+          <tr>
+            <td>Output used for</td>
+            <td>Human review of suspicious transactions; AML reporting</td>
+            <td>Credit approval, loan pricing, limit setting</td>
+          </tr>
+          <tr>
+            <td>Who is affected</td>
+            <td>All users equally (fraud monitoring is protective)</td>
+            <td>Individual applicants seeking credit (legally significant effect)</td>
+          </tr>
+          <tr>
+            <td>Legal basis in AI Act</td>
+            <td>Recital 58 — explicit exemption</td>
+            <td>Annex III, Point 5(b) — explicit listing</td>
+          </tr>
+          <tr>
+            <td>Example (in-scope)</td>
+            <td>PulseGuard alerting compliance on €50k anomalous transfer</td>
+            <td>PulseCredit denying a loan application based on AI score</td>
+          </tr>
+          <tr>
+            <td>Example (boundary risk)</td>
+            <td colspan="2" style="text-align:center;color:#92400e;font-weight:600;">Using fraud scores as inputs to PulseCredit → Entire system becomes high-risk</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Provider/Deployer Summary -->
+  <div class="section">
+    <h2>Provider vs. Deployer Summary</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>System</th><th>Role</th><th>Responsible for Conformity</th><th>Responsible for Use Compliance</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>PulseCredit</td>
+            <td><span class="badge badge-provider">Provider</span></td>
+            <td><strong>FinPulse NL B.V.</strong> — Must complete full Art. 16 conformity assessment</td>
+            <td><strong>FinPulse NL B.V.</strong></td>
+          </tr>
+          <tr>
+            <td>PulseConnect</td>
+            <td><span class="badge badge-deployer">Deployer</span></td>
+            <td><strong>CreditIQ B.V.</strong> (provider) — FinPulse must obtain compliance evidence</td>
+            <td><strong>FinPulse NL B.V.</strong> — Art. 26 obligations, FRIA, logging, end-user notification</td>
+          </tr>
+          <tr>
+            <td>PulseGuard</td>
+            <td><span class="badge badge-deployer">Deployer</span></td>
+            <td>N/A — not high-risk; Threatrix B.V. responsible for SaaS security under DORA</td>
+            <td><strong>FinPulse NL B.V.</strong> — Art. 50 transparency; AML/PSD2 compliance</td>
+          </tr>
+          <tr>
+            <td>PulseBot</td>
+            <td><span class="badge badge-provider">Provider</span></td>
+            <td>N/A — limited-risk only</td>
+            <td><strong>FinPulse NL B.V.</strong> — Art. 50(1) chatbot disclosure</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /page-wrapper -->
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <h4>EU AI Act Assessment</h4>
+      <p>FinPulse NL B.V. — Section 02 — AI Inventory &amp; Risk Classification</p>
+    </div>
+    <div>
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="01-company-profile.html">Company Profile</a></li>
+        <li><a href="03-gap-analysis.html">Gap Analysis</a></li>
+        <li><a href="04-roadmap.html">Roadmap</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">EU AI Act Assessment Portfolio — FinPulse NL B.V. — February 2026 — Hypothetical Exercise</div>
+</footer>
+
+</body>
+</html>

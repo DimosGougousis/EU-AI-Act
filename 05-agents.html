@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Agents for EU AI Act Compliance — FinPulse NL B.V.</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .agent-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+    .agent-card-header {
+      background: linear-gradient(135deg, var(--eu-blue) 0%, #0044cc 100%);
+      color: var(--white);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    .agent-card-header .agent-icon {
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+    .agent-card-header h3 { color: var(--white); margin: 0; font-size: 1.1rem; }
+    .agent-card-header .agent-subtitle { color: rgba(255,255,255,0.8); font-size: 0.85rem; margin-top: 0.2rem; }
+    .agent-card-body { padding: 1.5rem; }
+    .agent-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 1.25rem; }
+    .agent-tab {
+      padding: 0.5rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .agent-tab.active, .agent-tab:hover { color: var(--eu-blue); border-bottom-color: var(--eu-blue); }
+
+    .code-block {
+      background: #1a1a2e;
+      color: #e2e8f0;
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      line-height: 1.7;
+      overflow-x: auto;
+      margin: 0.75rem 0;
+      position: relative;
+    }
+    .code-block .kw  { color: #93c5fd; }   /* keywords */
+    .code-block .str { color: #86efac; }   /* strings */
+    .code-block .cm  { color: #6b7280; font-style: italic; }  /* comments */
+    .code-block .key { color: #fbbf24; }   /* json keys */
+    .code-block .num { color: #f9a8d4; }   /* numbers */
+    .code-block .fn  { color: #c4b5fd; }   /* function names */
+    .code-lang {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.75rem;
+      font-size: 0.7rem;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .tool-form {
+      background: #f8faff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin: 0.75rem 0;
+    }
+    .tool-form h4 { margin-top: 0; color: var(--eu-blue); font-size: 0.95rem; }
+    .form-row { margin-bottom: 0.9rem; }
+    .form-row label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.3rem; }
+    .form-row input, .form-row select, .form-row textarea {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.88rem;
+      font-family: var(--font);
+      background: var(--white);
+      color: var(--text);
+    }
+    .form-row textarea { min-height: 80px; resize: vertical; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .btn-agent {
+      background: var(--eu-blue);
+      color: var(--white);
+      border: none;
+      padding: 0.6rem 1.4rem;
+      border-radius: var(--radius);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    .btn-agent:hover { background: var(--eu-blue-lt); }
+    .btn-secondary {
+      background: var(--white);
+      color: var(--eu-blue);
+      border: 1px solid var(--eu-blue);
+      padding: 0.6rem 1.2rem;
+      border-radius: var(--radius);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      margin-left: 0.5rem;
+    }
+
+    .output-preview {
+      background: #f0f9f4;
+      border: 1px solid #a7f3d0;
+      border-left: 4px solid #10b981;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      margin: 0.75rem 0;
+    }
+    .output-preview h5 { margin: 0 0 0.5rem; color: #065f46; font-size: 0.88rem; }
+
+    .use-case-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      color: var(--white);
+      padding: 0.2em 0.6em;
+      border-radius: 50px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+
+    .workflow-step {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    .workflow-step-num {
+      background: var(--eu-blue);
+      color: var(--white);
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .workflow-step-content h5 { margin: 0 0 0.25rem; font-size: 0.9rem; }
+    .workflow-step-content p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html">★ EU AI Act | FinPulse NL</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="01-company-profile.html">Company</a></li>
+      <li><a href="02-ai-inventory.html">AI Inventory</a></li>
+      <li><a href="03-gap-analysis.html">Gap Analysis</a></li>
+      <li><a href="04-roadmap.html">Roadmap</a></li>
+      <li><a href="05-agents.html" class="active">AI Agents</a></li>
+      <li class="nav-dropdown">
+        <a href="#">Artifacts</a>
+        <ul class="nav-dropdown-menu">
+          <li><a href="artifacts/06-technical-doc.html">Technical Documentation</a></li>
+          <li><a href="artifacts/07-risk-management.html">Risk Management System</a></li>
+          <li><a href="artifacts/08-data-governance.html">Data Governance</a></li>
+          <li><a href="artifacts/09-human-oversight.html">Human Oversight</a></li>
+          <li><a href="artifacts/10-fria.html">Fundamental Rights (FRIA)</a></li>
+          <li><a href="artifacts/11-conformity.html">Conformity Assessment</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <h1>AI Agents for Compliance Automation</h1>
+    <p class="subtitle">How FinPulse NL B.V. can leverage AI agents to automate, accelerate, and continuously execute EU AI Act compliance tasks.</p>
+    <p class="meta">EU AI Act Assessment | Section 05 | Built on Anthropic Claude Agent SDK</p>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <a href="index.html">Home</a> › <span>AI Agents</span>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- Introduction -->
+  <div class="section">
+    <h2>Why AI Agents for EU AI Act Compliance?</h2>
+    <p>The EU AI Act imposes substantial, ongoing obligations — risk assessments, documentation maintenance, bias monitoring, incident reporting, and annual reviews. These tasks are highly structured, data-intensive, and repetitive: precisely where AI agents excel.</p>
+    <p>FinPulse can deploy a suite of compliance agents — each specialised in a specific obligation — to dramatically reduce the manual effort of EU AI Act compliance. Agents can run autonomously on a schedule, trigger on events (model updates, threshold breaches), and produce structured outputs for human review and audit trails.</p>
+
+    <div class="card-grid" style="margin-top:1.5rem;">
+      <div class="card card-accent">
+        <h3>Agent 1 — ClassifyBot</h3>
+        <p>AI system risk classification agent. Takes system description, outputs risk tier with Annex III citation.</p>
+        <a href="#agent-classify" class="card-link">View details</a>
+      </div>
+      <div class="card card-accent">
+        <h3>Agent 2 — DocDraftAgent</h3>
+        <p>Automated Annex IV technical documentation generator from model metadata inputs.</p>
+        <a href="#agent-docdraft" class="card-link">View details</a>
+      </div>
+      <div class="card card-accent">
+        <h3>Agent 3 — BiasWatchAgent</h3>
+        <p>Continuous bias monitoring agent. Runs demographic parity checks on live PulseCredit decisions.</p>
+        <a href="#agent-bias" class="card-link">View details</a>
+      </div>
+      <div class="card card-accent">
+        <h3>Agent 4 — FRIAAgent</h3>
+        <p>Fundamental Rights Impact Assessment generator for new AI system deployments.</p>
+        <a href="#agent-fria" class="card-link">View details</a>
+      </div>
+      <div class="card card-yellow">
+        <h3>Agent 5 — ConformityBot</h3>
+        <p>Automated conformity checklist runner. Queries internal systems and documentation to verify Article 16 obligations.</p>
+        <a href="#agent-conformity" class="card-link">View details</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agent 1: ClassifyBot -->
+  <div class="agent-card" id="agent-classify">
+    <div class="agent-card-header">
+      <div class="agent-icon">🔍</div>
+      <div>
+        <h3>Agent 1 — ClassifyBot <span class="use-case-badge">Risk Classification</span></h3>
+        <div class="agent-subtitle">Automatically classifies AI systems against EU AI Act risk tiers, citing relevant articles and annexes. Triggered when a new AI system is registered or an existing system description changes.</div>
+      </div>
+    </div>
+    <div class="agent-card-body">
+
+      <h4>What it does</h4>
+      <p>ClassifyBot takes a structured description of an AI system (purpose, inputs, outputs, decision role, affected users) and runs a multi-step classification workflow:</p>
+      <div class="workflow-step">
+        <div class="workflow-step-num">1</div>
+        <div class="workflow-step-content"><h5>Prohibited AI Check</h5><p>Screens against Article 5 prohibited practices list. Flags any match for immediate escalation.</p></div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-step-num">2</div>
+        <div class="workflow-step-content"><h5>Annex III Matching</h5><p>Compares system purpose against each Annex III category (8 domains, 18+ sub-items). Returns matching categories with citation.</p></div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-step-num">3</div>
+        <div class="workflow-step-content"><h5>Exemption Check</h5><p>If Annex III match found, checks Recital 58 fraud exemption and other carve-outs. Evaluates "sole purpose" criterion.</p></div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-step-num">4</div>
+        <div class="workflow-step-content"><h5>Profiling Escalation</h5><p>Even if no direct Annex III match, checks if system profiles individuals in a manner that substantially influences Annex III decisions.</p></div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-step-num">5</div>
+        <div class="workflow-step-content"><h5>Classification Report</h5><p>Generates structured JSON classification with risk tier, legal basis, obligations summary, and recommended next steps.</p></div>
+      </div>
+
+      <h4 style="margin-top:1.25rem;">Tool Template — ClassifyBot Input Form</h4>
+      <div class="tool-form">
+        <h4>New AI System Registration — Classification Request</h4>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>System Name *</label>
+            <input type="text" placeholder="e.g. PulseCredit v2.1">
+          </div>
+          <div class="form-row">
+            <label>System Owner / Team *</label>
+            <input type="text" placeholder="e.g. Credit Technology Team">
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Primary Purpose (plain language) *</label>
+          <textarea placeholder="Describe what this AI system does and why. Be specific about the decisions it supports or makes...">Evaluates the creditworthiness of Dutch consumers and produces a credit score (0–100) and a recommended lending decision (Approve/Refer/Decline) for consumer loan applications between €500 and €25,000.</textarea>
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Key Inputs</label>
+            <textarea placeholder="List the data inputs..." style="min-height:60px;">BKR credit history, PSD2 transaction data, application form data (income, employment), loan amount requested</textarea>
+          </div>
+          <div class="form-row">
+            <label>Decision Output</label>
+            <textarea placeholder="Describe the output and how it is used..." style="min-height:60px;">Credit score + Approve/Refer/Decline. For loans ≤€5k: automated decision. For loans &gt;€5k: human review required.</textarea>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Affected Persons</label>
+            <input type="text" placeholder="e.g. Dutch consumers aged 18+ applying for loans" value="Dutch consumers aged 18–75 applying for consumer loans">
+          </div>
+          <div class="form-row">
+            <label>Deployment Context</label>
+            <select>
+              <option>Consumer Credit Provider (Wft licence)</option>
+              <option>Payment Institution (PSD2)</option>
+              <option>Insurance</option>
+              <option>Investment Services (MiFID II)</option>
+              <option>Internal Operations Only</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Is this system solely for fraud/AML detection?</label>
+          <select>
+            <option value="no">No — it has other primary purposes</option>
+            <option value="yes">Yes — fraud/AML detection only</option>
+            <option value="mixed">Mixed — fraud detection AND other purposes</option>
+          </select>
+        </div>
+        <button class="btn-agent">🤖 Run ClassifyBot</button>
+        <button class="btn-secondary">📋 Save Draft</button>
+      </div>
+
+      <div class="output-preview">
+        <h5>📤 Sample ClassifyBot Output (JSON)</h5>
+        <div class="code-block" style="margin-top:0.5rem;">
+          <span class="code-lang">JSON</span>
+<pre>{
+  <span class="key">"system"</span>: <span class="str">"PulseCredit v2.1"</span>,
+  <span class="key">"classification"</span>: {
+    <span class="key">"risk_tier"</span>: <span class="str">"HIGH_RISK"</span>,
+    <span class="key">"legal_basis"</span>: <span class="str">"Annex III, Point 5(b)"</span>,
+    <span class="key">"citation"</span>: <span class="str">"AI systems intended for evaluating creditworthiness of natural persons or establishing credit scores"</span>,
+    <span class="key">"prohibited_check"</span>: <span class="str">"PASSED — no Article 5 violations"</span>,
+    <span class="key">"fraud_exemption"</span>: <span class="str">"NOT APPLICABLE — primary purpose is creditworthiness, not fraud"</span>,
+    <span class="key">"profiling_escalation"</span>: <span class="str">"N/A — direct Annex III match"</span>
+  },
+  <span class="key">"obligations"</span>: [
+    <span class="str">"Art. 9 — Risk Management System"</span>,
+    <span class="str">"Art. 10 — Data Governance"</span>,
+    <span class="str">"Art. 11 + Annex IV — Technical Documentation"</span>,
+    <span class="str">"Art. 12 — Logging (min. 6 months)"</span>,
+    <span class="str">"Art. 13 — Transparency / Instructions for Use"</span>,
+    <span class="str">"Art. 14 — Human Oversight"</span>,
+    <span class="str">"Art. 15 — Accuracy, Robustness, Cybersecurity"</span>,
+    <span class="str">"Art. 43 — Conformity Assessment (internal, Annex VI)"</span>,
+    <span class="str">"Art. 27 — Fundamental Rights Impact Assessment"</span>
+  ],
+  <span class="key">"deadline"</span>: <span class="str">"2026-08-02"</span>,
+  <span class="key">"confidence"</span>: <span class="num">0.97</span>,
+  <span class="key">"next_steps"</span>: [
+    <span class="str">"Register system in EU AI Register (if required)"</span>,
+    <span class="str">"Initiate Article 9 risk management system documentation"</span>,
+    <span class="str">"Commission training data bias assessment"</span>
+  ]
+}</pre>
+        </div>
+      </div>
+
+      <h4>Agent Architecture (Claude SDK)</h4>
+      <div class="code-block">
+        <span class="code-lang">Python</span>
+<pre><span class="kw">import</span> anthropic
+
+client = anthropic.Anthropic()
+
+<span class="cm"># Tool definitions for ClassifyBot</span>
+tools = [
+    {
+        <span class="str">"name"</span>: <span class="str">"check_annex_iii"</span>,
+        <span class="str">"description"</span>: <span class="str">"Check if AI system matches any Annex III high-risk category"</span>,
+        <span class="str">"input_schema"</span>: {
+            <span class="str">"type"</span>: <span class="str">"object"</span>,
+            <span class="str">"properties"</span>: {
+                <span class="str">"system_purpose"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                <span class="str">"deployment_context"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>}
+            }
+        }
+    },
+    {
+        <span class="str">"name"</span>: <span class="str">"check_fraud_exemption"</span>,
+        <span class="str">"description"</span>: <span class="str">"Evaluate Recital 58 fraud detection exemption criteria"</span>,
+        <span class="str">"input_schema"</span>: {
+            <span class="str">"type"</span>: <span class="str">"object"</span>,
+            <span class="str">"properties"</span>: {
+                <span class="str">"sole_purpose_fraud"</span>: {<span class="str">"type"</span>: <span class="str">"boolean"</span>},
+                <span class="str">"outputs_used_for"</span>: {<span class="str">"type"</span>: <span class="str">"array"</span>, <span class="str">"items"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>}}
+            }
+        }
+    },
+    {
+        <span class="str">"name"</span>: <span class="str">"generate_classification_report"</span>,
+        <span class="str">"description"</span>: <span class="str">"Generate final classification report with obligations"</span>,
+        <span class="str">"input_schema"</span>: {
+            <span class="str">"type"</span>: <span class="str">"object"</span>,
+            <span class="str">"properties"</span>: {
+                <span class="str">"risk_tier"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                <span class="str">"legal_basis"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>}
+            }
+        }
+    }
+]
+
+<span class="kw">def</span> <span class="fn">classify_ai_system</span>(system_description: dict) -> dict:
+    messages = [{
+        <span class="str">"role"</span>: <span class="str">"user"</span>,
+        <span class="str">"content"</span>: <span class="fn">f</span><span class="str">"Classify this AI system under EU AI Act (2024/1689): {system_description}"</span>
+    }]
+
+    <span class="kw">while</span> <span class="kw">True</span>:
+        response = client.messages.create(
+            model=<span class="str">"claude-opus-4-6"</span>,
+            max_tokens=<span class="num">4096</span>,
+            tools=tools,
+            messages=messages,
+            system=<span class="str">"You are an EU AI Act classification expert. "
+                   "Systematically classify AI systems using the four-tier "
+                   "risk framework. Always cite specific articles and annexes."</span>
+        )
+
+        <span class="kw">if</span> response.stop_reason == <span class="str">"end_turn"</span>:
+            <span class="kw">return</span> response.content[<span class="num">0</span>].text
+
+        <span class="cm"># Process tool calls and continue agentic loop</span>
+        tool_results = process_tool_calls(response.content)
+        messages.append({<span class="str">"role"</span>: <span class="str">"assistant"</span>, <span class="str">"content"</span>: response.content})
+        messages.append({<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: tool_results})</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agent 2: DocDraftAgent -->
+  <div class="agent-card" id="agent-docdraft">
+    <div class="agent-card-header">
+      <div class="agent-icon">📄</div>
+      <div>
+        <h3>Agent 2 — DocDraftAgent <span class="use-case-badge">Documentation</span></h3>
+        <div class="agent-subtitle">Generates Annex IV technical documentation drafts from model metadata, training records, and performance metrics. Reduces documentation effort from weeks to hours.</div>
+      </div>
+    </div>
+    <div class="agent-card-body">
+
+      <h4>What it does</h4>
+      <p>DocDraftAgent connects to FinPulse's internal systems (MLflow model registry, data catalog, CI/CD pipeline) and pulls structured metadata to auto-generate a compliant Annex IV technical documentation draft for human review and sign-off.</p>
+
+      <div class="workflow-step">
+        <div class="workflow-step-num">1</div>
+        <div class="workflow-step-content"><h5>Model Registry Query</h5><p>Fetches model version, architecture, training parameters, and performance metrics from MLflow.</p></div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-step-num">2</div>
+        <div class="workflow-step-content"><h5>Data Catalog Query</h5><p>Retrieves data source descriptions, lineage, versions, and processing steps from the data catalog.</p></div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-step-num">3</div>
+        <div class="workflow-step-content"><h5>Annex IV Template Population</h5><p>Maps retrieved metadata to all required Annex IV fields. Flags missing information for human completion.</p></div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-step-num">4</div>
+        <div class="workflow-step-content"><h5>Draft Review &amp; Export</h5><p>Produces a structured draft document with completion percentage and list of items requiring human input.</p></div>
+      </div>
+
+      <h4 style="margin-top:1.25rem;">Tool Template — DocDraftAgent Input Form</h4>
+      <div class="tool-form">
+        <h4>Technical Documentation Generation Request</h4>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Model Registry ID *</label>
+            <input type="text" placeholder="e.g. mlflow://pulsecredit/v2.1.3" value="mlflow://pulsecredit/v2.1.3">
+          </div>
+          <div class="form-row">
+            <label>Data Catalog Reference</label>
+            <input type="text" placeholder="e.g. datahub://credit/training-2024-q4" value="datahub://credit/training-2024-q4">
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>System Risk Tier</label>
+            <select>
+              <option>HIGH-RISK (Annex III)</option>
+              <option>Limited-Risk</option>
+              <option>Minimal-Risk</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>Target Compliance Date</label>
+            <input type="date" value="2026-07-31">
+          </div>
+        </div>
+        <div class="form-row">
+          <label>System Owner &amp; Signatory</label>
+          <input type="text" placeholder="Name, Title" value="Dr. Elena Visser, Chief Technology Officer">
+        </div>
+        <div class="form-row">
+          <label>Additional Context (optional)</label>
+          <textarea placeholder="Any additional information the agent should incorporate...">This model replaces PulseCredit v1.x which was a logistic regression only. The XGBoost ensemble was introduced in January 2025 to improve AUC. Bias remediation was applied in Q4 2024 following an internal audit finding.</textarea>
+        </div>
+        <button class="btn-agent">🤖 Generate Technical Documentation Draft</button>
+        <button class="btn-secondary">🔗 Connect to MLflow</button>
+      </div>
+
+      <div class="output-preview">
+        <h5>📤 Agent Output — Completion Summary</h5>
+        <p><strong>Documentation completeness: 78%</strong> — 22 of 28 Annex IV fields auto-populated.</p>
+        <p><strong>Fields requiring human input (6):</strong></p>
+        <ul style="margin:0.5rem 0;">
+          <li>Section 2.3 — Known failure modes and edge cases (subjective assessment required)</li>
+          <li>Section 3.4 — Post-market monitoring plan (policy decision)</li>
+          <li>Section 4.1 — Instructions for deployers (operational context required)</li>
+          <li>Section 5.2 — Residual risk justification (risk owner sign-off required)</li>
+          <li>Section 6.1 — Cybersecurity test results (pending external test)</li>
+          <li>Section 7.0 — Signatory and declaration (requires authorised officer)</li>
+        </ul>
+        <p><strong>Draft saved to:</strong> <code>compliance/artifacts/pulsecredit-v2.1.3-annex-iv-draft.docx</code></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agent 3: BiasWatchAgent -->
+  <div class="agent-card" id="agent-bias">
+    <div class="agent-card-header">
+      <div class="agent-icon">⚖️</div>
+      <div>
+        <h3>Agent 3 — BiasWatchAgent <span class="use-case-badge">Bias Monitoring</span></h3>
+        <div class="agent-subtitle">Runs on a weekly schedule to monitor live PulseCredit decisions for demographic bias. Automatically generates fairness reports and escalates if thresholds are breached.</div>
+      </div>
+    </div>
+    <div class="agent-card-body">
+
+      <h4>What it does</h4>
+      <p>BiasWatchAgent queries the pseudonymised PulseCredit decision log, computes fairness metrics across demographic groups, compares against established thresholds, and generates a structured report. If any metric breaches its threshold, it creates an incident ticket and notifies the Head of Data Science.</p>
+
+      <h4>Fairness Metrics Monitored</h4>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Metric</th><th>Definition</th><th>Groups Monitored</th><th>Alert Threshold</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Demographic Parity Difference</td>
+              <td>|P(approve|group A) – P(approve|group B)|</td>
+              <td>Gender, Age bracket, Nationality</td>
+              <td>&gt; 0.05 (5%)</td>
+            </tr>
+            <tr>
+              <td>Equalized Odds Difference</td>
+              <td>|TPR_A – TPR_B| + |FPR_A – FPR_B|</td>
+              <td>Gender, Age bracket</td>
+              <td>&gt; 0.08</td>
+            </tr>
+            <tr>
+              <td>Approval Rate by Postal Region</td>
+              <td>Approval rate per 2-digit postcode</td>
+              <td>Netherlands postcodes</td>
+              <td>Coefficient of variation &gt; 0.15</td>
+            </tr>
+            <tr>
+              <td>Population Stability Index (PSI)</td>
+              <td>Score distribution shift vs. baseline</td>
+              <td>All applicants</td>
+              <td>PSI &gt; 0.25</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>Scheduled Agent Configuration</h4>
+      <div class="code-block">
+        <span class="code-lang">Python</span>
+<pre><span class="kw">import</span> anthropic
+<span class="kw">from</span> apscheduler.schedulers.blocking <span class="kw">import</span> BlockingScheduler
+
+client = anthropic.Anthropic()
+
+tools = [
+    {
+        <span class="str">"name"</span>: <span class="str">"query_decision_log"</span>,
+        <span class="str">"description"</span>: <span class="str">"Query pseudonymised credit decision log for a date range"</span>,
+        <span class="str">"input_schema"</span>: {
+            <span class="str">"type"</span>: <span class="str">"object"</span>,
+            <span class="str">"properties"</span>: {
+                <span class="str">"start_date"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                <span class="str">"end_date"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                <span class="str">"include_demographics"</span>: {<span class="str">"type"</span>: <span class="str">"boolean"</span>}
+            }
+        }
+    },
+    {
+        <span class="str">"name"</span>: <span class="str">"compute_fairness_metrics"</span>,
+        <span class="str">"description"</span>: <span class="str">"Compute demographic parity, equalized odds, PSI"</span>,
+        <span class="str">"input_schema"</span>: {
+            <span class="str">"type"</span>: <span class="str">"object"</span>,
+            <span class="str">"properties"</span>: {
+                <span class="str">"data"</span>: {<span class="str">"type"</span>: <span class="str">"object"</span>},
+                <span class="str">"metrics"</span>: {<span class="str">"type"</span>: <span class="str">"array"</span>}
+            }
+        }
+    },
+    {
+        <span class="str">"name"</span>: <span class="str">"create_incident_ticket"</span>,
+        <span class="str">"description"</span>: <span class="str">"Create compliance incident ticket when threshold breached"</span>,
+        <span class="str">"input_schema"</span>: {
+            <span class="str">"type"</span>: <span class="str">"object"</span>,
+            <span class="str">"properties"</span>: {
+                <span class="str">"severity"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                <span class="str">"metric"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                <span class="str">"value"</span>: {<span class="str">"type"</span>: <span class="str">"number"</span>},
+                <span class="str">"threshold"</span>: {<span class="str">"type"</span>: <span class="str">"number"</span>}
+            }
+        }
+    },
+    {
+        <span class="str">"name"</span>: <span class="str">"publish_fairness_report"</span>,
+        <span class="str">"description"</span>: <span class="str">"Save fairness report to compliance repository"</span>,
+        <span class="str">"input_schema"</span>: {
+            <span class="str">"type"</span>: <span class="str">"object"</span>,
+            <span class="str">"properties"</span>: {
+                <span class="str">"report_data"</span>: {<span class="str">"type"</span>: <span class="str">"object"</span>},
+                <span class="str">"week"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>}
+            }
+        }
+    }
+]
+
+scheduler = BlockingScheduler()
+
+<span class="cm"># Run every Monday at 07:00 Amsterdam time</span>
+@scheduler.scheduled_job(<span class="str">'cron'</span>, day_of_week=<span class="str">'mon'</span>, hour=<span class="num">7</span>, timezone=<span class="str">'Europe/Amsterdam'</span>)
+<span class="kw">def</span> <span class="fn">run_bias_watch</span>():
+    response = client.messages.create(
+        model=<span class="str">"claude-opus-4-6"</span>,
+        max_tokens=<span class="num">8096</span>,
+        tools=tools,
+        system=<span class="str">"You are BiasWatchAgent. Each week, query the previous 7 days of "
+               "PulseCredit decisions, compute all fairness metrics, compare to "
+               "thresholds, create incident tickets for any breaches, and publish "
+               "a fairness report. Be thorough and precise."</span>,
+        messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Run weekly bias monitoring report."</span>}]
+    )
+    <span class="kw">return</span> response</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agent 4: FRIAAgent -->
+  <div class="agent-card" id="agent-fria">
+    <div class="agent-card-header">
+      <div class="agent-icon">⚖️</div>
+      <div>
+        <h3>Agent 4 — FRIAAgent <span class="use-case-badge">Rights Assessment</span></h3>
+        <div class="agent-subtitle">Generates structured Fundamental Rights Impact Assessment (FRIA) drafts for new AI system deployments or significant updates, per Article 27 EU AI Act.</div>
+      </div>
+    </div>
+    <div class="agent-card-body">
+
+      <h4>FRIA Input Form</h4>
+      <div class="tool-form">
+        <h4>Fundamental Rights Impact Assessment — New Deployment</h4>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>AI System Name *</label>
+            <input type="text" value="PulseCredit v2.1">
+          </div>
+          <div class="form-row">
+            <label>Deployment Date</label>
+            <input type="date" value="2026-08-01">
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Affected Population *</label>
+          <textarea style="min-height:60px;">Dutch consumers aged 18–75 applying for consumer loans €500–€25,000 via FinPulse mobile app. Approximately 18,000 applicants per year. No special target group, but may disproportionately affect lower-income individuals and first-time borrowers (thin-file applicants).</textarea>
+        </div>
+        <div class="form-row">
+          <label>AI Act Risk Classification</label>
+          <select>
+            <option>HIGH-RISK — Annex III §5(b) Credit Scoring</option>
+            <option>HIGH-RISK — Other Annex III</option>
+            <option>Limited-Risk</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>GDPR DPIA Reference (if existing)</label>
+          <input type="text" placeholder="e.g. DPIA-2025-003" value="DPIA-2025-003">
+        </div>
+        <div class="form-row">
+          <label>Sensitive Groups at Risk (check all that apply)</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-top:0.3rem;font-size:0.85rem;">
+            <label style="font-weight:normal;"><input type="checkbox" checked> Ethnic minorities</label>
+            <label style="font-weight:normal;"><input type="checkbox" checked> Low-income applicants</label>
+            <label style="font-weight:normal;"><input type="checkbox"> Elderly persons</label>
+            <label style="font-weight:normal;"><input type="checkbox" checked> First-time borrowers (thin file)</label>
+            <label style="font-weight:normal;"><input type="checkbox"> Persons with disabilities</label>
+            <label style="font-weight:normal;"><input type="checkbox"> Non-native speakers</label>
+          </div>
+        </div>
+        <button class="btn-agent">🤖 Generate FRIA Draft</button>
+      </div>
+
+      <div class="output-preview">
+        <h5>📤 Sample FRIA Agent Output — Rights Assessment Table</h5>
+        <div class="table-wrap" style="margin-top:0.5rem;">
+          <table>
+            <thead>
+              <tr><th>Fundamental Right</th><th>Potential Impact</th><th>Likelihood</th><th>Severity</th><th>Mitigation</th><th>Residual Risk</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Non-discrimination (Art. 21 EUCFR)</td>
+                <td>Proxy discrimination via postal code features correlating with ethnicity</td>
+                <td>Medium</td>
+                <td>High</td>
+                <td>Remove postcode features; weekly fairness monitoring; demographic parity threshold at 5%</td>
+                <td><span class="sev-medium">LOW</span></td>
+              </tr>
+              <tr>
+                <td>Access to financial services (Art. 34 EUCFR)</td>
+                <td>Thin-file applicants (no credit history) systematically declined</td>
+                <td>High</td>
+                <td>Medium</td>
+                <td>Manual review path for thin-file applicants; minimum data thresholds before automated decision</td>
+                <td><span class="sev-medium">MEDIUM</span></td>
+              </tr>
+              <tr>
+                <td>Right to explanation (Art. 22 GDPR; Art. 13 AI Act)</td>
+                <td>Applicants cannot understand why they were declined</td>
+                <td>High</td>
+                <td>High</td>
+                <td>SHAP-based reason codes in rejection letters; plain-language templates; dispute process</td>
+                <td><span class="sev-low">LOW</span></td>
+              </tr>
+              <tr>
+                <td>Privacy &amp; data protection (Art. 8 EUCFR / GDPR)</td>
+                <td>Excessive data collection; training data retention beyond necessity</td>
+                <td>Low</td>
+                <td>Medium</td>
+                <td>Data minimisation review; retention policy aligned to 6yr consumer credit legal minimum</td>
+                <td><span class="sev-low">LOW</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agent 5: ConformityBot -->
+  <div class="agent-card" id="agent-conformity">
+    <div class="agent-card-header">
+      <div class="agent-icon">✅</div>
+      <div>
+        <h3>Agent 5 — ConformityBot <span class="use-case-badge">Compliance Check</span></h3>
+        <div class="agent-subtitle">Automated conformity assessment runner. Queries internal systems, documentation repositories, and operational logs to verify Article 16 obligations are met. Run monthly or before milestone reviews.</div>
+      </div>
+    </div>
+    <div class="agent-card-body">
+
+      <h4>Conformity Check Tool Template</h4>
+      <div class="tool-form">
+        <h4>Conformity Assessment Runner — PulseCredit</h4>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>System</label>
+            <input type="text" value="PulseCredit v2.1" readonly>
+          </div>
+          <div class="form-row">
+            <label>Assessment Type</label>
+            <select>
+              <option>Monthly Spot Check</option>
+              <option>Pre-Milestone Audit</option>
+              <option>Full Annex VI Assessment</option>
+              <option>Post-Incident Review</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Documentation Repository Path</label>
+          <input type="text" placeholder="e.g. SharePoint path or S3 URL" value="sharepoint://compliance/eu-ai-act/pulsecredit/">
+        </div>
+        <div class="form-row">
+          <label>Logging System Endpoint</label>
+          <input type="text" value="https://logs.internal.finpulse.nl/api/ai-decisions/">
+        </div>
+        <div class="form-row">
+          <label>Articles to Check</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin-top:0.3rem;font-size:0.85rem;">
+            <label style="font-weight:normal;"><input type="checkbox" checked> Art. 9 — Risk Mgmt</label>
+            <label style="font-weight:normal;"><input type="checkbox" checked> Art. 10 — Data Gov.</label>
+            <label style="font-weight:normal;"><input type="checkbox" checked> Art. 11 — Tech. Docs</label>
+            <label style="font-weight:normal;"><input type="checkbox" checked> Art. 12 — Logging</label>
+            <label style="font-weight:normal;"><input type="checkbox" checked> Art. 14 — Oversight</label>
+            <label style="font-weight:normal;"><input type="checkbox" checked> Art. 27 — FRIA</label>
+          </div>
+        </div>
+        <button class="btn-agent">🤖 Run Conformity Check</button>
+        <button class="btn-secondary">📅 Schedule Monthly</button>
+      </div>
+
+      <div class="output-preview">
+        <h5>📤 Sample ConformityBot Report — February 2026</h5>
+        <div class="table-wrap" style="margin-top:0.5rem;">
+          <table>
+            <thead>
+              <tr><th>Article</th><th>Obligation</th><th>Evidence Found</th><th>Status</th><th>Note</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Art. 9</td><td>Risk Management System</td><td>None found in repository</td><td><span class="sev-critical">❌ FAIL</span></td><td>No risk register located. Action required immediately.</td></tr>
+              <tr><td>Art. 10</td><td>Bias assessment conducted</td><td>None found in repository</td><td><span class="sev-critical">❌ FAIL</span></td><td>No bias test report found. Critical gap.</td></tr>
+              <tr><td>Art. 11</td><td>Technical documentation (Annex IV)</td><td>Confluence page found — 14/28 items populated</td><td><span class="sev-high">⚠️ PARTIAL</span></td><td>Documentation exists but incomplete. Missing: failure modes, instructions for use.</td></tr>
+              <tr><td>Art. 12</td><td>Logging — min. 6 months retention</td><td>Log retention policy: 30 days</td><td><span class="sev-critical">❌ FAIL</span></td><td>Retention 5x below minimum. Engineering ticket required.</td></tr>
+              <tr><td>Art. 14</td><td>Human oversight — HITL workflow</td><td>Loans &gt;€5k reviewed by loan officers</td><td><span class="sev-high">⚠️ PARTIAL</span></td><td>Override logging absent. No formal training records.</td></tr>
+              <tr><td>Art. 27</td><td>Fundamental Rights Impact Assessment</td><td>None found in repository</td><td><span class="sev-high">❌ FAIL</span></td><td>FRIA not initiated. Required before deployment.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:0.75rem;"><strong>Overall conformity score: 12%</strong> — 6 critical/high gaps identified. Full remediation required before August 2, 2026.</p>
+        <p><strong>Report saved:</strong> <code>compliance/reports/conformity-check-2026-02.json</code></p>
+      </div>
+
+      <h4>Agent Tool Definitions</h4>
+      <div class="code-block">
+        <span class="code-lang">JSON</span>
+<pre>[
+  {
+    <span class="key">"name"</span>: <span class="str">"check_document_exists"</span>,
+    <span class="key">"description"</span>: <span class="str">"Check if a required compliance document exists in the repository"</span>,
+    <span class="key">"input_schema"</span>: {
+      <span class="key">"type"</span>: <span class="str">"object"</span>,
+      <span class="key">"properties"</span>: {
+        <span class="key">"document_type"</span>: {<span class="key">"type"</span>: <span class="str">"string"</span>,
+          <span class="key">"enum"</span>: [<span class="str">"risk_management_system"</span>, <span class="str">"technical_documentation"</span>,
+                    <span class="str">"bias_assessment"</span>, <span class="str">"fria"</span>, <span class="str">"conformity_declaration"</span>]},
+        <span class="key">"repository_path"</span>: {<span class="key">"type"</span>: <span class="str">"string"</span>}
+      },
+      <span class="key">"required"</span>: [<span class="str">"document_type"</span>, <span class="str">"repository_path"</span>]
+    }
+  },
+  {
+    <span class="key">"name"</span>: <span class="str">"check_log_retention"</span>,
+    <span class="key">"description"</span>: <span class="str">"Query logging system to verify retention period meets 6-month minimum"</span>,
+    <span class="key">"input_schema"</span>: {
+      <span class="key">"type"</span>: <span class="str">"object"</span>,
+      <span class="key">"properties"</span>: {
+        <span class="key">"log_endpoint"</span>: {<span class="key">"type"</span>: <span class="str">"string"</span>},
+        <span class="key">"system_id"</span>: {<span class="key">"type"</span>: <span class="str">"string"</span>}
+      }
+    }
+  },
+  {
+    <span class="key">"name"</span>: <span class="str">"generate_conformity_report"</span>,
+    <span class="key">"description"</span>: <span class="str">"Generate structured conformity assessment report"</span>,
+    <span class="key">"input_schema"</span>: {
+      <span class="key">"type"</span>: <span class="str">"object"</span>,
+      <span class="key">"properties"</span>: {
+        <span class="key">"check_results"</span>: {<span class="key">"type"</span>: <span class="str">"array"</span>},
+        <span class="key">"overall_score"</span>: {<span class="key">"type"</span>: <span class="str">"number"</span>},
+        <span class="key">"output_path"</span>: {<span class="key">"type"</span>: <span class="str">"string"</span>}
+      }
+    }
+  }
+]</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Integration Architecture -->
+  <div class="section">
+    <h2>Agent Integration Architecture</h2>
+    <p class="section-intro">All five compliance agents are orchestrated through a central compliance pipeline, with outputs stored in a shared compliance repository and surfaced in FinPulse's internal compliance dashboard.</p>
+    <div class="code-block">
+      <span class="code-lang">Architecture</span>
+<pre>
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │                    FINPULSE COMPLIANCE AGENT PLATFORM               │
+  │                                                                     │
+  │  Triggers:                                                          │
+  │  ├── Event: New AI system registered → ClassifyBot runs             │
+  │  ├── Event: Model deployed/updated  → DocDraftAgent runs            │
+  │  ├── Schedule: Weekly Monday 07:00  → BiasWatchAgent runs           │
+  │  ├── Schedule: Monthly 1st         → ConformityBot runs             │
+  │  └── Event: New deployment         → FRIAAgent runs                 │
+  │                                                                     │
+  │  Agents (Claude claude-opus-4-6 / claude-sonnet-4-6):               │
+  │  ├── ClassifyBot  ──→ AI Inventory + EU AI Act Regulation DB        │
+  │  ├── DocDraftAgent ─→ MLflow Registry + DataHub Catalog             │
+  │  ├── BiasWatchAgent → Decision Log DB + Incident Ticketing (Jira)   │
+  │  ├── FRIAAgent ─────→ System Description + GDPR DPIA Store          │
+  │  └── ConformityBot ─→ SharePoint Docs + Log API + Report Store      │
+  │                                                                     │
+  │  Outputs:                                                           │
+  │  ├── Compliance Repository (SharePoint)                             │
+  │  ├── Compliance Dashboard (internal web app)                        │
+  │  ├── Incident Tickets (Jira)                                        │
+  │  └── Audit Trail (immutable log store)                              │
+  └─────────────────────────────────────────────────────────────────────┘
+</pre>
+    </div>
+
+    <div class="alert alert-info">
+      <strong>Human-in-the-Loop by Design</strong>
+      All agent outputs require human review and sign-off before being treated as authoritative compliance records. Agents accelerate and systematise compliance work; they do not replace human judgment. This design aligns with Article 14 (human oversight) and ensures FinPulse retains legal accountability for its compliance programme.
+    </div>
+  </div>
+
+</div><!-- /page-wrapper -->
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <h4>EU AI Act Assessment</h4>
+      <p>FinPulse NL B.V. — Section 05 — AI Agents for Compliance</p>
+    </div>
+    <div>
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="04-roadmap.html">Roadmap</a></li>
+        <li><a href="artifacts/11-conformity.html">Conformity Assessment</a></li>
+        <li><a href="artifacts/10-fria.html">FRIA</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Agent SDK Reference</h4>
+      <ul>
+        <li>Anthropic Claude claude-opus-4-6</li>
+        <li>Tool use / agentic loop</li>
+        <li>Scheduled execution (APScheduler)</li>
+        <li>Structured JSON outputs</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">EU AI Act Assessment Portfolio — FinPulse NL B.V. — February 2026 — Hypothetical Exercise</div>
+</footer>
+
+</body>
+</html>

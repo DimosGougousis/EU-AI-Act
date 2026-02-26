@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fundamental Rights Impact Assessment — PulseCredit — Article 27</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html">★ EU AI Act | FinPulse NL</a>
+    <ul class="nav-links">
+      <li><a href="../index.html">Overview</a></li>
+      <li><a href="../02-ai-inventory.html">AI Inventory</a></li>
+      <li><a href="../03-gap-analysis.html">Gap Analysis</a></li>
+      <li><a href="../04-roadmap.html">Roadmap</a></li>
+      <li><a href="../05-agents.html">AI Agents</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="active">Artifacts</a>
+        <ul class="nav-dropdown-menu">
+          <li><a href="06-technical-doc.html">Technical Documentation</a></li>
+          <li><a href="07-risk-management.html">Risk Management System</a></li>
+          <li><a href="08-data-governance.html">Data Governance</a></li>
+          <li><a href="09-human-oversight.html">Human Oversight</a></li>
+          <li><a href="10-fria.html">Fundamental Rights (FRIA)</a></li>
+          <li><a href="11-conformity.html">Conformity Assessment</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <h1>Fundamental Rights Impact Assessment (FRIA)</h1>
+    <p class="subtitle">PulseCredit v2.1 — Article 27, EU AI Act | Aligned with GDPR DPIA-2025-003</p>
+    <p class="meta">Artifact 10 | Version: 1.0-DRAFT | FRIA Owner: DPO / Head of Legal | GDPR DPIA Reference: DPIA-2025-003</p>
+  </div>
+</div>
+<div class="breadcrumb"><a href="../index.html">Home</a> › <a href="#">Artifacts</a> › <span>Fundamental Rights Impact Assessment</span></div>
+
+<div class="page-wrapper">
+
+  <div class="section">
+    <h2>1. Scope &amp; Methodology</h2>
+    <div class="two-col">
+      <div>
+        <h3>1.1 System in Scope</h3>
+        <p><strong>PulseCredit v2.1</strong> — AI credit scoring and loan origination system used by FinPulse NL B.V. under its Consumer Credit Provider authorisation (Wft). Processes approximately 18,000 consumer loan applications per year for Dutch residents aged 18+.</p>
+        <h3>1.2 Assessment Framework</h3>
+        <p>Assessment conducted against the EU Charter of Fundamental Rights (EUCFR), GDPR, and the Dutch Constitution. Methodology: structured rights inventory → impact assessment → mitigation design → residual risk sign-off.</p>
+        <p>Cross-referenced with GDPR DPIA-2025-003 (automated credit decision processing) conducted by the Data Protection Officer. FRIA extends DPIA findings to non-data-protection fundamental rights.</p>
+      </div>
+      <div>
+        <div class="sidebar-card">
+          <h3>Affected Population</h3>
+          <div class="fact-row"><span class="fact-label">Total applications/yr</span><span class="fact-value">~18,000</span></div>
+          <div class="fact-row"><span class="fact-label">Demographics</span><span class="fact-value">Dutch residents 18+</span></div>
+          <div class="fact-row"><span class="fact-label">Channel</span><span class="fact-value">FinPulse mobile app</span></div>
+          <div class="fact-row"><span class="fact-label">Loan range</span><span class="fact-value">€500 – €25,000</span></div>
+          <div class="fact-row"><span class="fact-label">Vulnerable groups</span><span class="fact-value">Thin-file, young adults, non-Dutch nationals</span></div>
+          <div class="fact-row"><span class="fact-label">Assessment date</span><span class="fact-value">February 2026</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2. Fundamental Rights Impact Assessment</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Fundamental Right</th>
+            <th>Legal Basis</th>
+            <th>Potential Impact</th>
+            <th>Likelihood</th>
+            <th>Severity</th>
+            <th>Mitigation Measures</th>
+            <th>Residual Risk</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Non-discrimination &amp; Equality</strong></td>
+            <td>Art. 21 EUCFR; GDPR Art. 22(3); Awgb (Netherlands Equal Treatment Act)</td>
+            <td>
+              <strong>Proxy discrimination:</strong> Historical credit data may encode past lending discrimination. Geographic or behavioral features may correlate with protected characteristics (ethnicity, nationality, religion).<br><br>
+              <strong>Age discrimination risk:</strong> 18–30 age group shows 10.2% approval rate gap (borderline against threshold).
+            </td>
+            <td>Medium</td>
+            <td>High</td>
+            <td>
+              <ul>
+                <li>Postcode feature removed (v2.1)</li>
+                <li>Weekly BiasWatchAgent demographic parity monitoring</li>
+                <li>Fairness constraint in training (exponentiated gradient)</li>
+                <li>Q2 2026 remediation review for age group gap</li>
+                <li>Mandatory manual review for 18–25 applicants (interim)</li>
+              </ul>
+            </td>
+            <td><span class="sev-medium">LOW-MEDIUM</span></td>
+          </tr>
+          <tr>
+            <td><strong>Privacy &amp; Data Protection</strong></td>
+            <td>Art. 8 EUCFR; GDPR (all provisions); GDPR DPIA-2025-003</td>
+            <td>
+              Extensive personal data processing (BKR credit history, 24mo bank transactions, income) for automated credit decision. Risk of excessive data collection, unlawful retention, or inference of sensitive attributes from behavioral data.
+            </td>
+            <td>Low</td>
+            <td>Medium</td>
+            <td>
+              <ul>
+                <li>GDPR DPIA-2025-003 identifies lawful basis and safeguards</li>
+                <li>Data minimisation: only necessary features used (postcode removed)</li>
+                <li>Retention aligned to 6-year consumer credit legal minimum</li>
+                <li>PSD2 data used only with explicit user consent</li>
+                <li>Data pseudonymised in audit logs</li>
+              </ul>
+            </td>
+            <td><span class="sev-low">LOW</span></td>
+          </tr>
+          <tr>
+            <td><strong>Access to Essential Services / Financial Inclusion</strong></td>
+            <td>Art. 34 EUCFR; Dutch Consumer Credit Act (WCK) obligations of fair assessment</td>
+            <td>
+              Thin-file applicants (first-time borrowers, recent immigrants, young adults) may be systematically excluded from credit due to insufficient data for AI assessment, regardless of actual creditworthiness. AI may perpetuate financial exclusion without credit history.
+            </td>
+            <td>High</td>
+            <td>Medium</td>
+            <td>
+              <ul>
+                <li>Thin-file routing to manual review (mandatory)</li>
+                <li>Senior loan officer review for thin-file applications</li>
+                <li>Supplementary documentation acceptance (employment contract, payslips)</li>
+                <li>Minimum data threshold: if insufficient data, defaults to manual review (not automatic decline)</li>
+                <li>No automated decline for thin-file applicants</li>
+              </ul>
+            </td>
+            <td><span class="sev-medium">MEDIUM</span></td>
+          </tr>
+          <tr>
+            <td><strong>Right to Explanation &amp; Effective Remedy</strong></td>
+            <td>GDPR Art. 22 (automated decision-making right); Art. 47 EUCFR (effective judicial remedy); Consumer Credit Directive Art. 9</td>
+            <td>
+              Applicants who receive AI-influenced credit decisions have a legal right to an explanation and to contest the decision. Without meaningful explanation, this right is effectively denied. Automated decisions (≤€5k loans) are particularly at risk.
+            </td>
+            <td>High</td>
+            <td>High</td>
+            <td>
+              <ul>
+                <li>SHAP-based reason codes: top 3 factors communicated to loan officer</li>
+                <li>Plain-language rejection letter templates with factor-based explanation</li>
+                <li>Disclosure of AI use in all credit decision communications</li>
+                <li>Complaints &amp; dispute process: internal review within 5 business days</li>
+                <li>Human review available on request for all automated decisions</li>
+              </ul>
+            </td>
+            <td><span class="sev-low">LOW</span></td>
+          </tr>
+          <tr>
+            <td><strong>Human Dignity</strong></td>
+            <td>Art. 1 EUCFR</td>
+            <td>
+              Fully automated credit decline without human consideration could be experienced as dehumanising, particularly by vulnerable applicants in financial difficulty. Risk of treating applicants as data subjects without individual consideration.
+            </td>
+            <td>Low</td>
+            <td>Medium</td>
+            <td>
+              <ul>
+                <li>Automated declines for ≤€5k loans include plain-language explanation and invitation to contact a human advisor</li>
+                <li>Any applicant can request human review of automated decision</li>
+                <li>Complaints process accessible via app and phone</li>
+                <li>Vulnerable customer protocol: flagging of potential financial vulnerability for enhanced review</li>
+              </ul>
+            </td>
+            <td><span class="sev-low">LOW</span></td>
+          </tr>
+          <tr>
+            <td><strong>Freedom from Manipulation</strong></td>
+            <td>Art. 1 &amp; 8 EUCFR; GDPR Art. 5(1)(a) (fairness principle)</td>
+            <td>
+              PulseConnect credit eligibility nudges (separate system) may manipulate applicants into applying for credit they would not otherwise seek, potentially increasing over-indebtedness risk. Assessed here as contextual risk to PulseCredit applicants.
+            </td>
+            <td>Medium</td>
+            <td>Medium</td>
+            <td>
+              <ul>
+                <li>PulseConnect nudges include affordability warnings and responsible lending disclosures</li>
+                <li>Over-indebtedness risk assessment integrated into PulseCredit (DTI ratio threshold)</li>
+                <li>Separate FRIA conducted for PulseConnect</li>
+                <li>AFM consumer protection principles applied to all nudge communications</li>
+              </ul>
+            </td>
+            <td><span class="sev-low">LOW</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3. GDPR DPIA Alignment</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>DPIA Finding</th><th>FRIA Incorporation</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>DPIA-2025-003 confirmed: PulseCredit constitutes automated decision-making under GDPR Art. 22 for loans ≤€5k. GDPR Art. 22(2)(a) applies — automated decision is necessary for performance of a contract.</td>
+            <td>FRIA extends this finding to the right-to-explanation dimension: Art. 22(3) requires suitable measures to safeguard rights, including right to obtain human intervention and to contest the decision. All measures documented in Human Oversight Design (Artifact 09).</td>
+          </tr>
+          <tr>
+            <td>DPIA found: processing of ethnic origin data (nationality as proxy) for bias testing falls under Art. 9(2)(g) substantial public interest, with appropriate safeguards (aggregated data only, deleted after assessment).</td>
+            <td>FRIA confirms this safeguard is proportionate to the non-discrimination objective. The alternative (not testing for bias) would create higher fundamental rights risk.</td>
+          </tr>
+          <tr>
+            <td>DPIA recommends: data retention policy for loan applications aligned to 6-year consumer credit legal minimum.</td>
+            <td>FRIA confirms retention policy is proportionate and aligns with EU AI Act Art. 12 logging obligations.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4. Residual Risk Summary &amp; Sign-off</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Fundamental Right</th><th>Residual Risk Level</th><th>Acceptable?</th><th>Conditions</th></tr></thead>
+        <tbody>
+          <tr><td>Non-discrimination</td><td><span class="sev-medium">LOW-MEDIUM</span></td><td>Yes — conditional</td><td>Subject to Q2 2026 age group remediation and ongoing weekly monitoring</td></tr>
+          <tr><td>Privacy &amp; Data Protection</td><td><span class="sev-low">LOW</span></td><td>Yes</td><td>GDPR DPIA safeguards in place</td></tr>
+          <tr><td>Access to Financial Services</td><td><span class="sev-medium">MEDIUM</span></td><td>Yes — conditional</td><td>Thin-file manual review must remain mandatory and not be bypassed</td></tr>
+          <tr><td>Right to Explanation</td><td><span class="sev-low">LOW</span></td><td>Yes</td><td>Subject to rejection letter update and human review access implementation</td></tr>
+          <tr><td>Human Dignity</td><td><span class="sev-low">LOW</span></td><td>Yes</td><td>Vulnerable customer protocol must be maintained</td></tr>
+          <tr><td>Freedom from Manipulation</td><td><span class="sev-low">LOW</span></td><td>Yes</td><td>PulseConnect FRIA must also be completed and controls maintained</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="declaration-box" style="margin-top:1.5rem;">
+      <h3>FRIA Sign-off</h3>
+      <p style="text-align:center;font-size:0.88rem;">This Fundamental Rights Impact Assessment has been conducted in accordance with Article 27 of EU AI Act Regulation (EU) 2024/1689. Residual risks are assessed as acceptable subject to the conditions noted above. This FRIA must be reviewed upon any significant modification to PulseCredit or its use context.</p>
+      <div class="sig-block">
+        <div class="sig-item"><label>DPO</label><span>__ I. Janssen — PENDING __</span></div>
+        <div class="sig-item"><label>Head of Legal</label><span>__ S. Bakker — PENDING __</span></div>
+        <div class="sig-item"><label>CRO</label><span>__ A. van Dijk — PENDING __</span></div>
+        <div class="sig-item"><label>Assessment Date</label><span>Target: May 31, 2026</span></div>
+        <div class="sig-item"><label>Next Review</label><span>On significant model change; annually otherwise</span></div>
+        <div class="sig-item"><label>DPIA Reference</label><span>DPIA-2025-003</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div><h4>Artifact 10</h4><p>Fundamental Rights Impact Assessment — PulseCredit v2.1<br>EU AI Act Article 27 | DRAFT</p></div>
+    <div><h4>Navigation</h4><ul>
+      <li><a href="../index.html">Overview</a></li>
+      <li><a href="09-human-oversight.html">Human Oversight</a></li>
+      <li><a href="11-conformity.html">Conformity Assessment</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom">EU AI Act Assessment Portfolio — FinPulse NL B.V. — February 2026 — Hypothetical Exercise</div>
+</footer>
+</body>
+</html>

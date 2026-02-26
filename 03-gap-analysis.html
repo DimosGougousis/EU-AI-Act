@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gap Analysis — EU AI Act — FinPulse NL B.V.</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html">★ EU AI Act | FinPulse NL</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="01-company-profile.html">Company</a></li>
+      <li><a href="02-ai-inventory.html">AI Inventory</a></li>
+      <li><a href="03-gap-analysis.html" class="active">Gap Analysis</a></li>
+      <li><a href="04-roadmap.html">Roadmap</a></li>
+      <li><a href="05-agents.html">AI Agents</a></li>
+      <li class="nav-dropdown">
+        <a href="#">Artifacts</a>
+        <ul class="nav-dropdown-menu">
+          <li><a href="artifacts/06-technical-doc.html">Technical Documentation</a></li>
+          <li><a href="artifacts/07-risk-management.html">Risk Management System</a></li>
+          <li><a href="artifacts/08-data-governance.html">Data Governance</a></li>
+          <li><a href="artifacts/09-human-oversight.html">Human Oversight</a></li>
+          <li><a href="artifacts/10-fria.html">Fundamental Rights (FRIA)</a></li>
+          <li><a href="artifacts/11-conformity.html">Conformity Assessment</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <h1>Gap Analysis</h1>
+    <p class="subtitle">Per-article compliance gap assessment for FinPulse NL B.V. AI systems against EU AI Act obligations.</p>
+    <p class="meta">EU AI Act Assessment | Section 03 | Assessment Date: February 26, 2026</p>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <a href="index.html">Home</a> › <span>Gap Analysis</span>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- Summary -->
+  <div class="section">
+    <h2>Assessment Summary</h2>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-num sev-critical">4</div><div class="stat-label">Critical Gaps</div></div>
+      <div class="stat-card"><div class="stat-num sev-high">6</div><div class="stat-label">High Gaps</div></div>
+      <div class="stat-card"><div class="stat-num sev-medium">5</div><div class="stat-label">Medium Gaps</div></div>
+      <div class="stat-card"><div class="stat-num sev-low">3</div><div class="stat-label">Low / Info</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:#10b981;">3</div><div class="stat-label">Compliant</div></div>
+    </div>
+    <div class="alert alert-critical">
+      <strong>Assessment Scope</strong>
+      This gap analysis covers: PulseCredit (provider, high-risk), PulseConnect (deployer, high-risk), PulseGuard (deployer, exempt/limited-risk), and PulseBot (provider, limited-risk). Assessment reflects hypothetical baseline state as of February 2026, before remediation activities.
+    </div>
+  </div>
+
+  <!-- PulseCredit -->
+  <div class="section">
+    <h2>PulseCredit — Provider Gap Analysis <span class="badge badge-high" style="font-size:0.8rem;vertical-align:middle;">HIGH-RISK</span></h2>
+    <p class="section-intro">As provider, FinPulse must satisfy all Article 16 obligations before placing PulseCredit on the market or continuing to use it post August 2, 2026.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>EU AI Act Obligation</th>
+            <th>Article</th>
+            <th>Current State</th>
+            <th>Gap</th>
+            <th>Severity</th>
+            <th>Remediation Action</th>
+            <th>Owner</th>
+            <th>Target Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Risk Management System</strong></td>
+            <td>Art. 9</td>
+            <td>No formal AI risk management system. Ad hoc model monitoring exists via data science team.</td>
+            <td>No documented risk identification methodology, no risk register, no lifecycle monitoring plan.</td>
+            <td><span class="sev-critical">CRITICAL</span></td>
+            <td>Establish formal AI risk management system; create risk register; define monitoring triggers. See <a href="artifacts/07-risk-management.html">Artifact 07</a>.</td>
+            <td>Chief Risk Officer</td>
+            <td>31 May 2026</td>
+          </tr>
+          <tr>
+            <td><strong>Data Governance</strong></td>
+            <td>Art. 10</td>
+            <td>Training data sourced from BKR, proprietary history, PSD2 feeds. No bias assessment conducted. No data sheet documentation.</td>
+            <td>Missing: bias testing, representativeness analysis, data lineage documentation, demographic fairness evaluation.</td>
+            <td><span class="sev-critical">CRITICAL</span></td>
+            <td>Conduct full bias audit of training data; remediate identified biases; create data governance documentation. See <a href="artifacts/08-data-governance.html">Artifact 08</a>.</td>
+            <td>Head of Data Science</td>
+            <td>30 Apr 2026</td>
+          </tr>
+          <tr>
+            <td><strong>Technical Documentation</strong></td>
+            <td>Art. 11 + Annex IV</td>
+            <td>Model documentation exists in Confluence (data science wiki) but does not meet Annex IV requirements — incomplete architecture specs, no formal training procedure record.</td>
+            <td>Documentation does not cover all Annex IV items: system design description, data details, performance metrics, known failure modes, instructions for deployers.</td>
+            <td><span class="sev-critical">CRITICAL</span></td>
+            <td>Create comprehensive Annex IV technical file. See <a href="artifacts/06-technical-doc.html">Artifact 06</a>.</td>
+            <td>CTO / Head of Data Science</td>
+            <td>31 May 2026</td>
+          </tr>
+          <tr>
+            <td><strong>Logging &amp; Record-Keeping</strong></td>
+            <td>Art. 12</td>
+            <td>Application decisions are logged in CRM. Model inference logs retained for 30 days (data pipeline constraint). No structured AI decision audit log.</td>
+            <td>Retention period below 6-month minimum. Logs do not capture full inference context required for audit. No automated logging of model version used per decision.</td>
+            <td><span class="sev-high">HIGH</span></td>
+            <td>Extend log retention to 6+ months. Enhance logging to capture: model version, input features (pseudonymised), output score, human override flag, timestamp.</td>
+            <td>Head of Engineering</td>
+            <td>30 Apr 2026</td>
+          </tr>
+          <tr>
+            <td><strong>Transparency to Deployers</strong></td>
+            <td>Art. 13</td>
+            <td>FinPulse is both provider and internal deployer. No formal "Instructions for Use" document exists. Loan officers use PulseCredit via an internal dashboard with minimal guidance.</td>
+            <td>No documented instructions covering: intended use, limitations, human oversight requirements, how to interpret outputs, when to override.</td>
+            <td><span class="sev-high">HIGH</span></td>
+            <td>Produce formal Instructions for Use document. Include in operator training programme.</td>
+            <td>Product Manager (Credit)</td>
+            <td>31 May 2026</td>
+          </tr>
+          <tr>
+            <td><strong>Human Oversight</strong></td>
+            <td>Art. 14</td>
+            <td>Loans &gt;€5k require manual review but process is informal. No structured HITL workflow, no override logging, no operator competence requirements defined. Some loan officers override AI without justification.</td>
+            <td>No documented oversight model. No systematic override logging. No training programme for loan officer AI competence. No escalation procedure.</td>
+            <td><span class="sev-critical">CRITICAL</span></td>
+            <td>Design formal HITL oversight workflow. Implement mandatory override justification logging. Create AI literacy training for loan officers. See <a href="artifacts/09-human-oversight.html">Artifact 09</a>.</td>
+            <td>Head of Credit Operations</td>
+            <td>30 Jun 2026</td>
+          </tr>
+          <tr>
+            <td><strong>Accuracy, Robustness &amp; Cybersecurity</strong></td>
+            <td>Art. 15</td>
+            <td>Model performance tracked (AUC, GINI) quarterly. No adversarial robustness testing. No documented security review of the ML pipeline.</td>
+            <td>Missing: adversarial testing, out-of-distribution input testing, ML pipeline security assessment (DORA ICT risk overlap).</td>
+            <td><span class="sev-high">HIGH</span></td>
+            <td>Commission adversarial robustness testing. Conduct ML pipeline security review (integrate with DORA ICT risk framework). Document results.</td>
+            <td>Head of Engineering / CISO</td>
+            <td>30 Jun 2026</td>
+          </tr>
+          <tr>
+            <td><strong>Fundamental Rights Impact Assessment</strong></td>
+            <td>Art. 27</td>
+            <td>No FRIA conducted. GDPR DPIA exists but does not address fundamental rights beyond data protection.</td>
+            <td>Missing dedicated FRIA covering: non-discrimination, access to financial services, right to explanation, dignity.</td>
+            <td><span class="sev-high">HIGH</span></td>
+            <td>Conduct FRIA, cross-referencing existing DPIA. See <a href="artifacts/10-fria.html">Artifact 10</a>.</td>
+            <td>DPO / Legal</td>
+            <td>30 May 2026</td>
+          </tr>
+          <tr>
+            <td><strong>Conformity Assessment</strong></td>
+            <td>Art. 43 + Annex VI</td>
+            <td>No conformity assessment conducted. No Declaration of Conformity. No CE marking considerations.</td>
+            <td>Entire conformity assessment process missing.</td>
+            <td><span class="sev-high">HIGH</span></td>
+            <td>Conduct internal conformity assessment per Annex VI once all Article 16 requirements met. Issue Declaration of Conformity. See <a href="artifacts/11-conformity.html">Artifact 11</a>.</td>
+            <td>Head of Compliance</td>
+            <td>31 Jul 2026</td>
+          </tr>
+          <tr>
+            <td><strong>End-User Notification (Art. 26 §7 applied by analogy)</strong></td>
+            <td>Art. 26(7) / Art. 13</td>
+            <td>Loan rejection letters state "your application was declined" with generic reasons. No disclosure of AI use.</td>
+            <td>End-users not informed that AI was used in credit decision. Right to explanation not operationalised.</td>
+            <td><span class="sev-high">HIGH</span></td>
+            <td>Update rejection/approval letters to disclose AI use. Implement plain-language explanation mechanism (SHAP-driven reason codes).</td>
+            <td>Product Manager (Credit) / Legal</td>
+            <td>31 Jul 2026</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PulseConnect -->
+  <div class="section">
+    <h2>PulseConnect — Deployer Gap Analysis <span class="badge badge-high" style="font-size:0.8rem;vertical-align:middle;">HIGH-RISK</span></h2>
+    <p class="section-intro">As deployer of CreditIQ's model, FinPulse must fulfil Article 26 obligations. Critically, FinPulse must also obtain evidence that CreditIQ (the provider) has fulfilled its Article 16 obligations.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>EU AI Act Obligation</th>
+            <th>Article</th>
+            <th>Current State</th>
+            <th>Gap</th>
+            <th>Severity</th>
+            <th>Remediation Action</th>
+            <th>Owner</th>
+            <th>Target Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Obtain Provider Compliance Evidence</strong></td>
+            <td>Art. 26(1)</td>
+            <td>CreditIQ contract does not include AI Act compliance warranties. No technical documentation received from CreditIQ.</td>
+            <td>FinPulse has no evidence that CreditIQ has fulfilled Art. 16 obligations. Cannot fulfil deployer obligations without this.</td>
+            <td><span class="sev-critical">CRITICAL</span></td>
+            <td>Formally request CreditIQ's Annex IV technical documentation and conformity assessment. Update contract with AI Act compliance warranties. If CreditIQ cannot demonstrate compliance, consider alternative provider or in-house replacement.</td>
+            <td>Head of Legal / Vendor Management</td>
+            <td>31 Mar 2026</td>
+          </tr>
+          <tr>
+            <td><strong>Use Within Instructions</strong></td>
+            <td>Art. 26(1)</td>
+            <td>PulseConnect uses CreditIQ's API per commercial integration guide. No formal "Instructions for Use" document received from CreditIQ.</td>
+            <td>Deployment may not align with CreditIQ's intended use boundaries. Cannot verify compliance without Instructions for Use.</td>
+            <td><span class="sev-high">HIGH</span></td>
+            <td>Obtain Instructions for Use from CreditIQ. Review current deployment against stated intended use.</td>
+            <td>Head of Product (Connect)</td>
+            <td>31 Mar 2026</td>
+          </tr>
+          <tr>
+            <td><strong>Data Quality Control</strong></td>
+            <td>Art. 26(3)</td>
+            <td>PSD2 data fed to CreditIQ API is not validated against CreditIQ's data quality requirements (not provided by CreditIQ).</td>
+            <td>Input data quality may not meet provider's requirements, leading to degraded or unreliable outputs.</td>
+            <td><span class="sev-medium">MEDIUM</span></td>
+            <td>Implement data validation pipeline for PSD2 inputs. Align with CreditIQ data specification once obtained.</td>
+            <td>Head of Data Engineering</td>
+            <td>30 Apr 2026</td>
+          </tr>
+          <tr>
+            <td><strong>Logging of Operations</strong></td>
+            <td>Art. 26(5)</td>
+            <td>PulseConnect logs API calls to CreditIQ but only retains logs for 14 days (data cost constraints).</td>
+            <td>Log retention below 6-month minimum. Logs insufficient for audit.</td>
+            <td><span class="sev-high">HIGH</span></td>
+            <td>Extend retention to 6+ months. Log: user ID (pseudonymised), Financial Health Score output, nudge displayed, timestamp, CreditIQ API version.</td>
+            <td>Head of Engineering</td>
+            <td>30 Apr 2026</td>
+          </tr>
+          <tr>
+            <td><strong>Human Oversight Implementation</strong></td>
+            <td>Art. 26(2)</td>
+            <td>Financial Health Score and eligibility nudges are fully automated. No human review of individual outputs.</td>
+            <td>No human oversight mechanism in place. Mass deployment to 95,000 users without oversight review. For nudges above a credit threshold, human spot-check required.</td>
+            <td><span class="sev-medium">MEDIUM</span></td>
+            <td>Implement sample-based human review of Financial Health Scores (e.g., 1% monthly sample). Define escalation for edge cases (scores near boundaries).</td>
+            <td>Head of Product (Connect)</td>
+            <td>30 Jun 2026</td>
+          </tr>
+          <tr>
+            <td><strong>Fundamental Rights Impact Assessment</strong></td>
+            <td>Art. 27</td>
+            <td>No FRIA conducted for PulseConnect despite credit eligibility outputs affecting 95,000 users.</td>
+            <td>Missing FRIA — particularly important given potential for financial exclusion and discrimination in credit eligibility nudges.</td>
+            <td><span class="sev-medium">MEDIUM</span></td>
+            <td>Conduct FRIA for PulseConnect, focusing on credit access and non-discrimination impacts on mass user base.</td>
+            <td>DPO / Legal</td>
+            <td>31 May 2026</td>
+          </tr>
+          <tr>
+            <td><strong>End-User Notification</strong></td>
+            <td>Art. 26(7)</td>
+            <td>PulseConnect app shows Financial Health Score without disclosing AI generation. Users unaware score is generated by third-party AI system.</td>
+            <td>No disclosure that AI (CreditIQ model) generates the score. Users not informed of AI's role in credit eligibility nudges.</td>
+            <td><span class="sev-medium">MEDIUM</span></td>
+            <td>Add "Generated by AI" label to Financial Health Score display. Add tooltip/link to AI explanation page. Update Terms &amp; Privacy Policy.</td>
+            <td>Head of Product (Connect) / Legal</td>
+            <td>31 Jul 2026</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PulseGuard & PulseBot -->
+  <div class="section">
+    <h2>PulseGuard &amp; PulseBot — Limited-Risk Check</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>System</th>
+            <th>Obligation</th>
+            <th>Article</th>
+            <th>Current State</th>
+            <th>Gap</th>
+            <th>Severity</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>PulseGuard</strong></td>
+            <td>Transparency disclosure — AI used in transaction monitoring</td>
+            <td>Art. 50(1)</td>
+            <td>Disclosure present in Terms &amp; Conditions (Section 8.3). Not prominently surfaced to users in-app.</td>
+            <td>Low visibility. Users likely unaware of AI transaction monitoring unless they read T&amp;Cs.</td>
+            <td><span class="sev-low">LOW</span></td>
+            <td>Add brief in-app disclosure on security settings page: "FinPulse uses AI to monitor transactions for fraud and security."</td>
+          </tr>
+          <tr>
+            <td><strong>PulseBot</strong></td>
+            <td>Chatbot AI disclosure at session start</td>
+            <td>Art. 50(1)</td>
+            <td>Compliant — PulseBot opens every session with: "You are chatting with PulseBot, an AI assistant. Type 'agent' to speak with a human."</td>
+            <td>No gap identified.</td>
+            <td><span class="sev-low">✅ COMPLIANT</span></td>
+            <td>No action required. Maintain disclosure in any future UI redesigns.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Regulatory Overlay -->
+  <div class="section">
+    <h2>Regulatory Overlay — DORA &amp; GDPR Intersections</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>EU AI Act Requirement</th><th>Intersecting Regulation</th><th>Overlap / Integration Note</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Art. 15 — Accuracy, robustness, cybersecurity</td>
+            <td>DORA (2022/2554) — ICT Risk Management (Arts. 5–16)</td>
+            <td>AI system security and resilience testing should be integrated into FinPulse's DORA ICT risk framework. Avoid duplicate documentation — a single ICT risk assessment can satisfy both DORA ICT requirements and AI Act Art. 15 for cybersecurity. DORA incident reporting may overlap with AI Act serious incident reporting.</td>
+          </tr>
+          <tr>
+            <td>Art. 27 — Fundamental Rights Impact Assessment</td>
+            <td>GDPR Art. 35 — Data Protection Impact Assessment</td>
+            <td>The FRIA and DPIA are distinct but closely related. The GDPR DPIA for PulseCredit should be updated to cross-reference FRIA findings. Art. 35 DPIA obligations are triggered by automated credit decisions. The FRIA must cover fundamental rights beyond data protection. Both documents should be jointly maintained by the DPO and Legal team.</td>
+          </tr>
+          <tr>
+            <td>Art. 12 — Logging and record-keeping</td>
+            <td>GDPR Art. 5(1)(e) — Storage limitation; Consumer Credit Directive record-keeping</td>
+            <td>AI decision logs must be retained for minimum 6 months per AI Act. Consumer credit regulations may require longer retention (typically 5–7 years for credit decisions). FinPulse should align log retention policy to longest applicable period. Ensure logs are pseudonymised to balance GDPR data minimisation with AI Act audit requirements.</td>
+          </tr>
+          <tr>
+            <td>Art. 26(1) — Use per provider instructions</td>
+            <td>GDPR Art. 28 — Data Processor Agreements</td>
+            <td>CreditIQ B.V. (PulseConnect provider) must be a GDPR data processor for the personal data it processes. The existing data processing agreement should be reviewed to ensure it covers AI Act obligations alongside GDPR DPA requirements. CreditIQ must be contractually required to provide conformity documentation.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /page-wrapper -->
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <h4>EU AI Act Assessment</h4>
+      <p>FinPulse NL B.V. — Section 03 — Gap Analysis</p>
+    </div>
+    <div>
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="02-ai-inventory.html">AI Inventory</a></li>
+        <li><a href="04-roadmap.html">Roadmap</a></li>
+        <li><a href="artifacts/11-conformity.html">Conformity Assessment</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">EU AI Act Assessment Portfolio — FinPulse NL B.V. — February 2026 — Hypothetical Exercise</div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risk Management System — PulseCredit — Article 9</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html">★ EU AI Act | FinPulse NL</a>
+    <ul class="nav-links">
+      <li><a href="../index.html">Overview</a></li>
+      <li><a href="../01-company-profile.html">Company</a></li>
+      <li><a href="../02-ai-inventory.html">AI Inventory</a></li>
+      <li><a href="../03-gap-analysis.html">Gap Analysis</a></li>
+      <li><a href="../04-roadmap.html">Roadmap</a></li>
+      <li><a href="../05-agents.html">AI Agents</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="active">Artifacts</a>
+        <ul class="nav-dropdown-menu">
+          <li><a href="06-technical-doc.html">Technical Documentation</a></li>
+          <li><a href="07-risk-management.html">Risk Management System</a></li>
+          <li><a href="08-data-governance.html">Data Governance</a></li>
+          <li><a href="09-human-oversight.html">Human Oversight</a></li>
+          <li><a href="10-fria.html">Fundamental Rights (FRIA)</a></li>
+          <li><a href="11-conformity.html">Conformity Assessment</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <h1>Risk Management System</h1>
+    <p class="subtitle">PulseCredit v2.1 — Article 9, EU AI Act (Regulation 2024/1689)</p>
+    <p class="meta">Artifact 07 | Version: 1.0-DRAFT | System: PulseCredit | Risk Owner: Chief Risk Officer</p>
+  </div>
+</div>
+<div class="breadcrumb"><a href="../index.html">Home</a> › <a href="#">Artifacts</a> › <span>Risk Management System</span></div>
+
+<div class="page-wrapper">
+
+  <div class="section">
+    <h2>1. Scope &amp; Governance</h2>
+    <p>This Risk Management System (RMS) is established for PulseCredit v2.1 in compliance with Article 9 of EU AI Act Regulation (EU) 2024/1689. It covers the full AI lifecycle from design through deployment through retirement, as required by Article 9(1): <em>"A risk management system shall be established, implemented, documented and maintained in relation to high-risk AI systems."</em></p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Element</th><th>Details</th></tr></thead>
+        <tbody>
+          <tr><td>System in scope</td><td>PulseCredit v2.1 — Credit scoring &amp; loan origination AI</td></tr>
+          <tr><td>Risk owner</td><td>Chief Risk Officer (CRO), FinPulse NL B.V.</td></tr>
+          <tr><td>Review cadence</td><td>Quarterly review; immediate review on significant model change or incident</td></tr>
+          <tr><td>Methodology</td><td>ISO 31000:2018 (Risk Management) adapted for AI systems; aligned with DNB SAFEST framework</td></tr>
+          <tr><td>Integration</td><td>Integrated with DORA ICT Risk Management Framework and GDPR DPA obligations</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2. Risk Identification Methodology</h2>
+    <p>Risks are identified across six threat categories using structured workshops (multi-disciplinary team: data science, engineering, compliance, legal, credit operations) supplemented by structured review of academic literature on credit AI risks and DNB/AFM supervisory guidance.</p>
+    <div class="card-grid">
+      <div class="card card-accent"><h3>Bias &amp; Discrimination</h3><p>Risk of systematic unfair treatment of protected groups (gender, age, nationality, ethnicity by proxy).</p></div>
+      <div class="card card-accent"><h3>Model Drift</h3><p>Risk that model performance degrades as population characteristics change over time (economic cycles, product changes).</p></div>
+      <div class="card card-accent"><h3>Data Quality</h3><p>Risk of incorrect decisions due to corrupted, stale, or manipulated input data.</p></div>
+      <div class="card card-accent"><h3>Cybersecurity</h3><p>Risk of adversarial attacks, model poisoning, inference attacks, or unauthorised access to model outputs.</p></div>
+      <div class="card card-accent"><h3>Fundamental Rights</h3><p>Risk of violating rights (non-discrimination, privacy, access to financial services, right to explanation).</p></div>
+      <div class="card card-accent"><h3>Operational</h3><p>Risk of human oversight failure, override misuse, or system unavailability affecting lending decisions.</p></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>3. Risk Register</h2>
+    <p class="section-intro">P = Probability (1=Rare, 2=Unlikely, 3=Possible, 4=Likely, 5=Almost Certain) | S = Severity (1=Negligible, 2=Minor, 3=Moderate, 4=Major, 5=Critical) | RR = Residual Risk (P×S post-mitigation)</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Risk ID</th><th>Risk Description</th><th>Category</th><th>P</th><th>S</th><th>Inherent Score</th><th>Mitigation Measures</th><th>Residual P</th><th>Residual S</th><th>RR</th><th>Acceptable?</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>R-01</td>
+            <td>Proxy discrimination via geographic features (postcode → ethnicity)</td>
+            <td>Bias</td>
+            <td>4</td><td>4</td><td class="sev-critical">16</td>
+            <td>Postcode feature removed (v2.1). Weekly demographic parity monitoring. Fairness constraint in training.</td>
+            <td>2</td><td>3</td><td>6</td>
+            <td><span class="sev-medium">Yes — MONITOR</span></td>
+          </tr>
+          <tr>
+            <td>R-02</td>
+            <td>Systematic disadvantage for thin-file applicants (young adults, recent immigrants)</td>
+            <td>Bias / Fundamental Rights</td>
+            <td>4</td><td>3</td><td class="sev-high">12</td>
+            <td>Thin-file routing to manual review. Separate model performance monitoring for thin-file segment. Minimum data threshold enforced.</td>
+            <td>2</td><td>3</td><td>6</td>
+            <td><span class="sev-medium">Yes — MONITOR</span></td>
+          </tr>
+          <tr>
+            <td>R-03</td>
+            <td>Model drift causing performance degradation undetected</td>
+            <td>Model Drift</td>
+            <td>3</td><td>4</td><td class="sev-high">12</td>
+            <td>BiasWatchAgent: weekly PSI monitoring. Alert threshold PSI &gt; 0.25. Quarterly full model performance review. Automatic retraining pipeline triggered on breach.</td>
+            <td>2</td><td>3</td><td>6</td>
+            <td><span class="sev-medium">Yes — MONITOR</span></td>
+          </tr>
+          <tr>
+            <td>R-04</td>
+            <td>Corrupted PSD2 transaction data causing incorrect credit assessment</td>
+            <td>Data Quality</td>
+            <td>3</td><td>3</td><td class="sev-high">9</td>
+            <td>Data validation pipeline: completeness checks, outlier detection, stale data flags. Minimum 6-month PSD2 history required; fallback to BKR-only path if PSD2 unavailable.</td>
+            <td>2</td><td>2</td><td>4</td>
+            <td><span class="sev-low">Yes</span></td>
+          </tr>
+          <tr>
+            <td>R-05</td>
+            <td>Adversarial input manipulation (applicant gaming the model)</td>
+            <td>Cybersecurity</td>
+            <td>2</td><td>3</td><td>6</td>
+            <td>Feature importance obfuscation (SHAP values only shown to loan officers, not applicants). Anomaly detection on application patterns. External adversarial testing commissioned (2026 Q2).</td>
+            <td>1</td><td>3</td><td>3</td>
+            <td><span class="sev-low">Yes</span></td>
+          </tr>
+          <tr>
+            <td>R-06</td>
+            <td>ML pipeline compromise (model poisoning, unauthorised access to training pipeline)</td>
+            <td>Cybersecurity</td>
+            <td>2</td><td>5</td><td class="sev-high">10</td>
+            <td>Role-based access to MLflow registry. Signed model artefacts. DORA ICT security controls applied. Audit logging on all pipeline access. Pipeline security assessment planned (Q2 2026).</td>
+            <td>1</td><td>4</td><td>4</td>
+            <td><span class="sev-low">Yes — post security assessment</span></td>
+          </tr>
+          <tr>
+            <td>R-07</td>
+            <td>Human oversight failure — loan officers rubber-stamping AI decisions</td>
+            <td>Operational</td>
+            <td>3</td><td>4</td><td class="sev-high">12</td>
+            <td>HITL workflow requiring active SHAP review before confirmation. Override logging with reason codes. Monthly override rate review by Head of Credit Ops. AI literacy training programme (mandatory, 4 hours).</td>
+            <td>2</td><td>3</td><td>6</td>
+            <td><span class="sev-medium">Yes — MONITOR</span></td>
+          </tr>
+          <tr>
+            <td>R-08</td>
+            <td>Model unavailability (system downtime) during peak application periods</td>
+            <td>Operational</td>
+            <td>2</td><td>2</td><td>4</td>
+            <td>Fallback to expedited manual review if PulseCredit unavailable &gt;15 minutes. DORA operational resilience requirements applied. SLA: 99.5% uptime.</td>
+            <td>1</td><td>2</td><td>2</td>
+            <td><span class="sev-low">Yes</span></td>
+          </tr>
+          <tr>
+            <td>R-09</td>
+            <td>Violation of right to explanation — applicants unable to understand credit decisions</td>
+            <td>Fundamental Rights</td>
+            <td>4</td><td>3</td><td class="sev-high">12</td>
+            <td>SHAP-based reason codes in loan officer interface. Plain-language rejection letter templates (top 3 contributing factors). Complaints &amp; dispute resolution process. Internal review within 5 business days.</td>
+            <td>2</td><td>2</td><td>4</td>
+            <td><span class="sev-low">Yes</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4. Monitoring Triggers &amp; Review Cadence</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Trigger</th><th>Threshold</th><th>Response</th><th>Owner</th></tr></thead>
+        <tbody>
+          <tr><td>PSI (Population Stability Index)</td><td>&gt; 0.25</td><td>Retraining review initiated within 5 business days</td><td>Head of Data Science</td></tr>
+          <tr><td>Demographic Parity Gap</td><td>&gt; 0.05 (any protected group)</td><td>Incident ticket created; bias remediation review within 10 days</td><td>CRO + Head of Data Science</td></tr>
+          <tr><td>AUC-ROC degradation</td><td>&lt; 0.75 on rolling 90-day window</td><td>Emergency model review; consider temporary suspension pending investigation</td><td>CTO + CRO</td></tr>
+          <tr><td>Override rate</td><td>&gt; 40% human overrides without documented reason</td><td>Operational review; potential model recalibration</td><td>Head of Credit Operations</td></tr>
+          <tr><td>Complaint rate</td><td>&gt; 0.5% of applicants lodge formal AI-related complaint</td><td>Incident review; process audit; DNB notification consideration</td><td>Head of Compliance</td></tr>
+          <tr><td>Serious malfunction</td><td>Any AI decision causing verified material harm to applicant</td><td>Incident report per Art. 73; DNB/AFM notification within 72 hours</td><td>CRO + Legal</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div><h4>Artifact 07</h4><p>Risk Management System — PulseCredit v2.1<br>EU AI Act Article 9 | DRAFT</p></div>
+    <div><h4>Navigation</h4><ul>
+      <li><a href="../index.html">Overview</a></li>
+      <li><a href="06-technical-doc.html">Technical Documentation</a></li>
+      <li><a href="08-data-governance.html">Data Governance</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom">EU AI Act Assessment Portfolio — FinPulse NL B.V. — February 2026 — Hypothetical Exercise</div>
+</footer>
+</body>
+</html>

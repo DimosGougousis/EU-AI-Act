@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conformity Assessment — PulseCredit — Annex VI + Declaration</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html">★ EU AI Act | FinPulse NL</a>
+    <ul class="nav-links">
+      <li><a href="../index.html">Overview</a></li>
+      <li><a href="../02-ai-inventory.html">AI Inventory</a></li>
+      <li><a href="../03-gap-analysis.html">Gap Analysis</a></li>
+      <li><a href="../04-roadmap.html">Roadmap</a></li>
+      <li><a href="../05-agents.html">AI Agents</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="active">Artifacts</a>
+        <ul class="nav-dropdown-menu">
+          <li><a href="06-technical-doc.html">Technical Documentation</a></li>
+          <li><a href="07-risk-management.html">Risk Management System</a></li>
+          <li><a href="08-data-governance.html">Data Governance</a></li>
+          <li><a href="09-human-oversight.html">Human Oversight</a></li>
+          <li><a href="10-fria.html">Fundamental Rights (FRIA)</a></li>
+          <li><a href="11-conformity.html">Conformity Assessment</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <h1>Conformity Assessment &amp; Declaration</h1>
+    <p class="subtitle">PulseCredit v2.1 — Annex VI Internal Control Assessment + EU Declaration of Conformity (Annex V Format)</p>
+    <p class="meta">Artifact 11 | Version: 1.0-DRAFT | Target: Complete by July 31, 2026</p>
+  </div>
+</div>
+<div class="breadcrumb"><a href="../index.html">Home</a> › <a href="#">Artifacts</a> › <span>Conformity Assessment</span></div>
+
+<div class="page-wrapper">
+
+  <div class="alert alert-warn">
+    <strong>Document Status: IN PROGRESS</strong>
+    This conformity assessment is prepared in advance of completion dates to track progress. Items marked ❌ FAIL or ⚠️ PARTIAL represent open gaps being addressed per the Implementation Roadmap (Section 04). The assessment will be finalised and signed off by July 31, 2026.
+  </div>
+
+  <!-- Annex VI Checklist -->
+  <div class="section">
+    <h2>1. Annex VI Internal Control Checklist</h2>
+    <p class="section-intro">Self-assessment per EU AI Act Annex VI — Internal Control Procedure for high-risk AI systems where conformity assessment is performed by the provider (Article 43(2)). Each obligation verified against documented evidence.</p>
+
+    <h3>Article 9 — Risk Management System</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Obligation</th><th>Article</th><th>Evidence Reference</th><th>Status</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Risk management system established, implemented, documented, maintained throughout AI lifecycle</td>
+            <td>Art. 9(1)</td>
+            <td><a href="07-risk-management.html">Artifact 07 — Risk Management System v1.0</a></td>
+            <td><span class="sev-high">⚠️ PARTIAL</span></td>
+            <td>Document drafted; lifecycle monitoring procedures not yet fully operationalised. Target: May 31, 2026.</td>
+          </tr>
+          <tr>
+            <td>Risks identified for intended use and reasonably foreseeable misuse</td>
+            <td>Art. 9(2)</td>
+            <td>Artifact 07 — Section 2 (Risk Identification)</td>
+            <td><span class="sev-high">⚠️ PARTIAL</span></td>
+            <td>Risk register covers 9 identified risks. Misuse scenarios need further development.</td>
+          </tr>
+          <tr>
+            <td>Risk mitigation measures implemented and tested</td>
+            <td>Art. 9(4)</td>
+            <td>Artifact 07 — Section 3 (Risk Register with mitigations)</td>
+            <td><span class="sev-high">⚠️ PARTIAL</span></td>
+            <td>Mitigations documented; adversarial testing not yet complete (scheduled Q2 2026).</td>
+          </tr>
+          <tr>
+            <td>Residual risk assessed as acceptable</td>
+            <td>Art. 9(5)</td>
+            <td>Artifact 07 — Section 3 (Residual Risk column)</td>
+            <td><span class="sev-high">⚠️ PARTIAL</span></td>
+            <td>Residual risk acceptability requires CRO sign-off. Target: May 31, 2026.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Article 10 — Data Governance</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Obligation</th><th>Article</th><th>Evidence Reference</th><th>Status</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Training, validation, and test data subject to appropriate data governance practices</td>
+            <td>Art. 10(1)</td>
+            <td><a href="08-data-governance.html">Artifact 08 — Data Governance v1.0</a></td>
+            <td><span class="sev-high">⚠️ PARTIAL</span></td>
+            <td>Data source registry complete. Quality metrics documented. Bias assessment complete.</td>
+          </tr>
+          <tr>
+            <td>Training data relevant, representative, accurate, and complete</td>
+            <td>Art. 10(3)</td>
+            <td>Artifact 08 — Sections 2 &amp; 3</td>
+            <td><span class="sev-high">⚠️ PARTIAL</span></td>
+            <td>380,000 records; representativeness confirmed. Age group gap (18–30) is borderline — Q2 2026 remediation planned.</td>
+          </tr>
+          <tr>
+            <td>Bias assessment and correction measures implemented</td>
+            <td>Art. 10(2)(f)</td>
+            <td>Artifact 08 — Section 3 (Bias Assessment Results)</td>
+            <td><span class="sev-medium">✅ SUBSTANTIALLY MET</span></td>
+            <td>Bias assessment completed; postcode removed; reweighting applied. Ongoing monitoring operational.</td>
+          </tr>
+          <tr>
+            <td>Special category data processed for bias correction with appropriate safeguards</td>
+            <td>Art. 10(5)</td>
+            <td>Artifact 08 — Section 1 (Data Source Registry — demographic data row)</td>
+            <td><span class="sev-medium">✅ MET</span></td>
+            <td>Art. 9(2)(g) GDPR basis documented; aggregated data only; deleted after assessment.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Article 11 + Annex IV — Technical Documentation</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Obligation</th><th>Article</th><th>Evidence Reference</th><th>Status</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Technical documentation drawn up before placing system on market</td>
+            <td>Art. 11(1)</td>
+            <td><a href="06-technical-doc.html">Artifact 06 — Technical Documentation v1.0-DRAFT</a></td>
+            <td><span class="sev-critical">❌ INCOMPLETE</span></td>
+            <td>Draft at 78% completion. Failure modes, instructions for use, cybersecurity section pending. Target: May 31, 2026.</td>
+          </tr>
+          <tr>
+            <td>Documentation covers all Annex IV items</td>
+            <td>Annex IV</td>
+            <td>Artifact 06 — All sections</td>
+            <td><span class="sev-critical">❌ INCOMPLETE</span></td>
+            <td>6 of 28 Annex IV items require completion. See Artifact 06 sign-off section.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Articles 12, 13, 14, 15 — Operational Requirements</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Obligation</th><th>Article</th><th>Evidence Reference</th><th>Status</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Automatic logging for minimum 6 months retention</td>
+            <td>Art. 12</td>
+            <td>Logging infrastructure documentation (Engineering)</td>
+            <td><span class="sev-critical">❌ FAIL</span></td>
+            <td>Current retention: 30 days. Engineering ticket raised; 6-month retention target by April 30, 2026.</td>
+          </tr>
+          <tr>
+            <td>Transparency — instructions for use documented</td>
+            <td>Art. 13</td>
+            <td>Artifact 06 — Section 4 (Instructions for Deployers) — DRAFT</td>
+            <td><span class="sev-high">⚠️ PARTIAL</span></td>
+            <td>Draft instructions present. Legal review and final sign-off pending.</td>
+          </tr>
+          <tr>
+            <td>Human oversight — meaningful control enabled by design</td>
+            <td>Art. 14</td>
+            <td><a href="09-human-oversight.html">Artifact 09 — Human Oversight Design v1.0-DRAFT</a></td>
+            <td><span class="sev-high">⚠️ PARTIAL</span></td>
+            <td>Design complete. HITL dashboard in development; AI literacy training programme not yet run. Target: June 30, 2026.</td>
+          </tr>
+          <tr>
+            <td>Accuracy, robustness, and cybersecurity verified</td>
+            <td>Art. 15</td>
+            <td>Technical Documentation Section 3 (performance) + robustness test report (pending)</td>
+            <td><span class="sev-critical">❌ INCOMPLETE</span></td>
+            <td>Model performance documented. Adversarial testing not yet commissioned. Target: June 30, 2026.</td>
+          </tr>
+          <tr>
+            <td>Fundamental Rights Impact Assessment conducted</td>
+            <td>Art. 27</td>
+            <td><a href="10-fria.html">Artifact 10 — FRIA v1.0-DRAFT</a></td>
+            <td><span class="sev-high">⚠️ PARTIAL</span></td>
+            <td>FRIA drafted. Pending DPO, Legal, and CRO sign-off. Target: May 31, 2026.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Overall Score -->
+    <div class="alert alert-warn" style="margin-top:1rem;">
+      <strong>Current Conformity Assessment Score: February 2026</strong><br>
+      ✅ MET: 2 obligations | ⚠️ PARTIAL: 7 obligations | ❌ FAIL/INCOMPLETE: 4 obligations<br>
+      <strong>Overall: 15% fully compliant — remediation required before July 31, 2026.</strong>
+    </div>
+  </div>
+
+  <!-- Non-conformities -->
+  <div class="section">
+    <h2>2. Open Non-Conformities &amp; Corrective Actions</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>NCR ID</th><th>Non-Conformity</th><th>Severity</th><th>Corrective Action</th><th>Owner</th><th>Due Date</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>NCR-01</td>
+            <td>Log retention 30 days — below 6-month minimum (Art. 12)</td>
+            <td><span class="sev-critical">CRITICAL</span></td>
+            <td>Engineering ticket PF-4821: extend Kafka log retention to 12 months; backfill from CRM records</td>
+            <td>Head of Engineering</td>
+            <td>30 Apr 2026</td>
+            <td><span class="sev-medium">Open</span></td>
+          </tr>
+          <tr>
+            <td>NCR-02</td>
+            <td>Annex IV technical documentation — 6 sections incomplete (Art. 11)</td>
+            <td><span class="sev-critical">CRITICAL</span></td>
+            <td>Data Science + Engineering to complete all Annex IV items; CTO sign-off</td>
+            <td>CTO</td>
+            <td>31 May 2026</td>
+            <td><span class="sev-medium">Open</span></td>
+          </tr>
+          <tr>
+            <td>NCR-03</td>
+            <td>Adversarial robustness testing not conducted (Art. 15)</td>
+            <td><span class="sev-critical">CRITICAL</span></td>
+            <td>Commission external adversarial testing (vendor: SecureAI NL); ML pipeline security assessment</td>
+            <td>CISO</td>
+            <td>30 Jun 2026</td>
+            <td><span class="sev-medium">Open</span></td>
+          </tr>
+          <tr>
+            <td>NCR-04</td>
+            <td>HITL oversight workflow not deployed; operator training not complete (Art. 14)</td>
+            <td><span class="sev-high">HIGH</span></td>
+            <td>Engineering to deploy dashboard; L&amp;D to run AI literacy training for all 15 loan officers</td>
+            <td>Head of Credit Ops</td>
+            <td>30 Jun 2026</td>
+            <td><span class="sev-medium">Open</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Declaration of Conformity -->
+  <div class="section">
+    <h2>3. EU Declaration of Conformity</h2>
+    <div class="alert alert-warn">
+      <strong>This Declaration is a DRAFT template.</strong> It will be signed and issued only after all NCRs above are closed and the conformity assessment is complete. Target signing date: July 31, 2026.
+    </div>
+
+    <div class="declaration-box">
+      <h3>EU Declaration of Conformity<br><small style="font-size:0.8rem;font-weight:400;">Annex V Format — Regulation (EU) 2024/1689 (EU AI Act)</small></h3>
+
+      <p><strong>1. AI System Name and Version:</strong><br>
+      PulseCredit v2.1 — AI Credit Scoring and Loan Origination System</p>
+
+      <p><strong>2. Provider Details:</strong><br>
+      FinPulse NL B.V.<br>
+      Herengracht 182, 1016 BR Amsterdam, Netherlands<br>
+      KVK: 87654321 | LEI: 549300FINPLS2026NL01</p>
+
+      <p><strong>3. AI System Description:</strong><br>
+      PulseCredit v2.1 is an AI system for the automated assessment of creditworthiness of natural persons and generation of credit recommendations for consumer loan applications ranging from €500 to €25,000. The system operates as a high-risk AI system pursuant to Annex III, Point 5(b) of Regulation (EU) 2024/1689.</p>
+
+      <p><strong>4. Intended Purpose and Deployment Context:</strong><br>
+      Used by FinPulse NL B.V. in the context of its Consumer Credit Provider authorisation under the Wet op het financieel toezicht (Wft), the Netherlands. Deployed exclusively within the FinPulse mobile application for Dutch consumers aged 18+.</p>
+
+      <p><strong>5. Declaration:</strong><br>
+      FinPulse NL B.V., as provider of the above-named AI system, hereby declares that PulseCredit v2.1 has been developed and is maintained in conformity with the requirements of Regulation (EU) 2024/1689 of the European Parliament and of the Council on Artificial Intelligence (EU AI Act), specifically:</p>
+      <ul>
+        <li>Article 9 — Risk Management System</li>
+        <li>Article 10 — Data and Data Governance</li>
+        <li>Article 11 and Annex IV — Technical Documentation</li>
+        <li>Article 12 — Record-Keeping and Logging</li>
+        <li>Article 13 — Transparency and Provision of Information to Deployers</li>
+        <li>Article 14 — Human Oversight</li>
+        <li>Article 15 — Accuracy, Robustness, and Cybersecurity</li>
+        <li>Article 27 — Fundamental Rights Impact Assessment</li>
+      </ul>
+
+      <p><strong>6. Technical Documentation Location:</strong><br>
+      Maintained at: <em>SharePoint: Compliance/EU-AI-Act/PulseCredit/TechnicalFile-v2.1/</em><br>
+      Available to national supervisory authorities (DNB, AFM, RDI) upon request.</p>
+
+      <div class="sig-block">
+        <div class="sig-item"><label>Signed By (Authorised Signatory)</label><span>__ A. van Dijk, Chief Risk Officer — PENDING __</span></div>
+        <div class="sig-item"><label>Legal Sign-off</label><span>__ S. Bakker, Head of Legal — PENDING __</span></div>
+        <div class="sig-item"><label>Compliance Sign-off</label><span>__ M. de Vries, Head of Compliance — PENDING __</span></div>
+        <div class="sig-item"><label>Place &amp; Date</label><span>Amsterdam, Netherlands — TARGET: July 31, 2026</span></div>
+        <div class="sig-item"><label>Reference to Annex VI</label><span>Internal control procedure per Annex VI; self-assessment by provider</span></div>
+        <div class="sig-item"><label>System Version</label><span>PulseCredit v2.1 (MLflow: pulsecredit/v2.1.3)</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div><h4>Artifact 11</h4><p>Conformity Assessment &amp; Declaration<br>EU AI Act Annex V &amp; VI | DRAFT</p></div>
+    <div><h4>Navigation</h4><ul>
+      <li><a href="../index.html">Overview</a></li>
+      <li><a href="../03-gap-analysis.html">Gap Analysis</a></li>
+      <li><a href="../04-roadmap.html">Roadmap</a></li>
+      <li><a href="10-fria.html">FRIA</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom">EU AI Act Assessment Portfolio — FinPulse NL B.V. — February 2026 — Hypothetical Exercise</div>
+</footer>
+</body>
+</html>
