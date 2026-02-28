@@ -6,7 +6,7 @@
 [![EU AI Act](https://img.shields.io/badge/Regulation-EU%202024%2F1689-003399)](https://artificialintelligenceact.eu/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> A production-grade EU AI Act compliance portfolio for a hypothetical Dutch FinTech — featuring **5 executable compliance automation agents** built on the OpenAI API, 11 regulatory artifacts, and a full pytest suite. **No API key needed to run the tests.**
+> An EU AI Act compliance programme proposal for a Dutch FinTech — featuring **5 executable compliance automation agents** built on the OpenAI API, 11 regulatory artifacts, and a full pytest suite. **No API key needed to run the tests.**
 
 **[Live Portfolio →](https://dimosGougousis.github.io/EU-AI-Act)**
 
@@ -23,7 +23,22 @@ The EU AI Act (Regulation 2024/1689) became enforceable for high-risk AI systems
 | DORA (2022/2554) | DNB | ICT risk management (Art. 15 overlap) |
 | PSD2 / Wft | DNB + AFM | Open banking data, consumer credit |
 
-This portfolio demonstrates how to **systematically address that complexity** — from risk classification through to a signed EU Declaration of Conformity — and how **AI agents can automate the highest-effort compliance tasks**.
+The standard PM response is a compliance gap tracker in a spreadsheet. This programme proposal demonstrates a different approach: **treat compliance obligations as product features** — scope them, prioritise them, automate the highest-effort ones, and track the backlog with the same rigour as a product roadmap.
+
+---
+
+## What This Is (PM Perspective)
+
+This programme proposal documents **end-to-end product delivery** of an EU AI Act compliance programme for a Dutch FinTech. It shows PM work across the full stack:
+
+| PM Activity | What's Here |
+|-------------|-------------|
+| **Discovery & scoping** | 21-gap article-by-article gap analysis, AI inventory classification, regulatory cross-reference table |
+| **Prioritisation under constraint** | Phased 6-month roadmap to Aug 2026 deadline, 136 FTE-days effort model, €53–93k external cost range |
+| **Stakeholder & delivery design** | RACI matrix across CPO/CTO/DPO/Legal, HITL oversight model with loan officer training plan |
+| **Build vs. buy vs. automate** | 5 agents targeting highest-effort manual tasks (classification, doc drafting, bias monitoring, FRIA, conformity) |
+| **Quality & test discipline** | Full pytest suite (68 tests), GitHub Actions CI, no tests skip even without API keys |
+| **Honest status reporting** | 15% conformity score with 4 open Critical NCRs — not inflated, tracked as GitHub Issues |
 
 ---
 
@@ -64,22 +79,6 @@ graph TD
 
 ---
 
-## Skills Demonstrated
-
-| Skill | Demonstrated By | Artifact |
-|-------|----------------|----------|
-| **Regulatory Analysis** | Four-tier risk classification with Annex III citations, Recital 58 boundary analysis | `02-ai-inventory.html` |
-| **Agentic System Design** | 5-agent compliance automation platform with tool schemas, agentic loops, APScheduler | `agents/` package |
-| **Data & Bias Governance** | Fairlearn demographic parity assessment, postcode proxy removal, corrective actions | `artifacts/08-data-governance.html` |
-| **Human-in-the-Loop Design** | Tiered HITL/HIC oversight model, SHAP explainability, override mechanism | `artifacts/09-human-oversight.html` |
-| **Fundamental Rights Assessment** | Article 27 FRIA across 6 EUCFR rights, GDPR DPIA cross-reference | `artifacts/10-fria.html` |
-| **Conformity Assessment** | Annex VI self-assessment, NCR tracking, EU Declaration of Conformity | `artifacts/11-conformity.html` |
-| **Product Roadmapping** | Phased 6-month implementation plan, RACI matrix, 136 FTE-day effort model | `04-roadmap.html` |
-| **Software Engineering** | Python package, pytest suite, GitHub Actions CI | `agents/`, `tests/`, `.github/` |
-| **Technical Writing** | 11 regulatory artifacts following EU legal document conventions | `artifacts/` directory |
-
----
-
 ## Agent Quick Reference
 
 | Agent | Trigger | Primary Input | Output | EU AI Act Article |
@@ -89,6 +88,176 @@ graph TD
 | **BiasWatchAgent** | Weekly cron (Mon 07:00 CET) | Decision log date range | Fairness report + incident tickets | Art. 10(4) |
 | **FRIAAgent** | New deployment | System + population description | FRIA covering 6 EUCFR rights | Art. 27 |
 | **ConformityBot** | Monthly / pre-milestone | System ID + repo path | Annex VI report + NCR list | Art. 43, Annex VI |
+
+---
+
+## Agent Output Examples
+
+<details>
+<summary><strong>ClassifyBot</strong> — PulseCredit v2.1 classification</summary>
+
+```json
+{
+  "risk_tier": "HIGH_RISK",
+  "legal_basis": "Annex III, Point 5(b)",
+  "confidence": 0.97,
+  "obligations": [
+    "Art. 9 — Risk Management System",
+    "Art. 10 — Data Governance",
+    "Art. 11 + Annex IV — Technical Documentation",
+    "Art. 12 — Logging (min. 6 months)",
+    "Art. 13 — Transparency / Instructions for Use",
+    "Art. 14 — Human Oversight",
+    "Art. 15 — Accuracy, Robustness, Cybersecurity",
+    "Art. 43 — Conformity Assessment (Annex VI)",
+    "Art. 27 — Fundamental Rights Impact Assessment"
+  ],
+  "deadline": "2026-08-02"
+}
+```
+</details>
+
+<details>
+<summary><strong>BiasWatchAgent</strong> — Week 2026-W09 fairness report</summary>
+
+```json
+{
+  "status": "BREACH_DETECTED",
+  "week": "2026-W09",
+  "decisions_analysed": 3847,
+  "metrics": {
+    "gender_dpd": 0.006,
+    "age_bracket_dpd": 0.102,
+    "nationality_dpd": 0.031,
+    "psi_score": 0.18
+  },
+  "breaches": [
+    {
+      "metric": "demographic_parity",
+      "group_a": "age_18_30",
+      "group_b": "age_31_54",
+      "value": 0.102,
+      "threshold": 0.05,
+      "ticket": "INC-2026-0147"
+    }
+  ],
+  "report_published": true
+}
+```
+
+> Age bracket demographic parity gap (10.2%) exceeds the 5% Article 10 threshold — incident ticket auto-created for the data science team.
+</details>
+
+<details>
+<summary><strong>DocDraftAgent</strong> — Annex IV technical documentation</summary>
+
+```json
+{
+  "status": "DRAFT_SAVED",
+  "system": "PulseCredit v2.1",
+  "completeness_pct": 78.0,
+  "sections_completed": [
+    "1. General Description",
+    "2. Intended Purpose and Deployment Context",
+    "3. Training Data Description (PSD2 + BKR, 240k records)",
+    "4. Performance Metrics (AUC-ROC: 0.847, Gini: 0.694)",
+    "5. Risk Management Summary"
+  ],
+  "sections_pending": [
+    "6. Post-Market Monitoring Plan",
+    "7. Serious Incident Reporting Procedure"
+  ],
+  "artifact_path": "sharepoint://compliance/eu-ai-act/pulsecredit/annex-iv-draft-v1.docx"
+}
+```
+</details>
+
+<details>
+<summary><strong>FRIAAgent</strong> — Article 27 Fundamental Rights Impact Assessment</summary>
+
+```json
+{
+  "status": "DRAFT_GENERATED",
+  "system": "PulseCredit v2.1",
+  "affected_population": "Dutch consumers aged 18-75",
+  "rights_assessed": 6,
+  "residual_risks": {
+    "non_discrimination": "MEDIUM",
+    "privacy_data_protection": "LOW",
+    "access_to_financial_services": "HIGH",
+    "right_to_explanation": "MEDIUM",
+    "human_dignity": "LOW",
+    "freedom_from_manipulation": "LOW"
+  },
+  "mitigation_measures": 14,
+  "report_path": "sharepoint://compliance/eu-ai-act/pulsecredit/fria-draft-v1.docx"
+}
+```
+
+> `access_to_financial_services` rated HIGH residual risk — automated Decline decisions for thin-file applicants require mandatory human review under Art. 14.
+</details>
+
+<details>
+<summary><strong>ConformityBot</strong> — February 2026 Annex VI baseline assessment</summary>
+
+```json
+{
+  "status": "REPORT_GENERATED",
+  "system_id": "pulsecredit-v2.1",
+  "assessment_date": "2026-02-28",
+  "overall_score": 15.0,
+  "ncr_count": 4,
+  "ncrs": [
+    {
+      "id": "NCR-001",
+      "article": "Art. 12",
+      "obligation": "Log retention ≥183 days",
+      "status": "FAIL",
+      "finding": "Current retention: 30 days. Minimum: 183 days."
+    },
+    {
+      "id": "NCR-002",
+      "article": "Art. 11",
+      "obligation": "Annex IV documentation >80% complete",
+      "status": "PARTIAL",
+      "finding": "50% complete — performance metrics section missing."
+    },
+    {
+      "id": "NCR-003",
+      "article": "Art. 15",
+      "obligation": "Adversarial robustness testing",
+      "status": "FAIL",
+      "finding": "No adversarial or distributional shift testing conducted."
+    },
+    {
+      "id": "NCR-004",
+      "article": "Art. 14",
+      "obligation": "HITL mechanism in production",
+      "status": "FAIL",
+      "finding": "HITL deployed in staging only. Not yet live."
+    }
+  ],
+  "next_assessment": "2026-03-31"
+}
+```
+
+> 15% conformity score reflects the Feb 2026 baseline — 5 months before the Aug 2026 deadline. All 4 NCRs are tracked as [GitHub Issues](../../issues) against the implementation roadmap milestones.
+</details>
+
+---
+
+## Skills Demonstrated
+
+| PM Competency | Evidence | Artifact |
+|---------------|----------|----------|
+| **Regulatory translation** | Four overlapping frameworks (EU AI Act + GDPR + DORA + PSD2) mapped to specific product obligations per AI system | `02-ai-inventory.html`, `03-gap-analysis.html` |
+| **Risk-based prioritisation** | 21 compliance gaps triaged by severity, owner, and deadline; 4 Critical NCRs escalated as GitHub Issues | `03-gap-analysis.html`, GitHub Issues #1–4 |
+| **Delivery planning** | 5-phase roadmap: 136 FTE-days effort, €53–93k external budget, RACI matrix, Aug 2026 milestone | `04-roadmap.html` |
+| **Ambiguity & judgment** | PulseConnect re-classified High-Risk via postcode proxy analysis; PulseGuard Recital 58 exemption boundary decision | `02-ai-inventory.html`, `docs/decisions.md` |
+| **Build vs. automate** | 5 agents targeting highest-effort manual tasks — bias monitoring alone saves ~4 person-days/week | `agents/`, `05-agents.html` |
+| **Honest status reporting** | Feb 2026 conformity score: 15% — open NCRs reported, not suppressed | `artifacts/11-conformity.html` |
+| **Test discipline** | 68 pytest tests across 5 agents, mocked API, CI on every push | `tests/`, `.github/workflows/` |
+| **Operational thinking** | Bias monitoring thresholds (DPD > 0.05, PSI > 0.25, AUC < 0.75), weekly schedule at Amsterdam timezone | `agents/bias_watch_agent.py` |
 
 ---
 
@@ -118,6 +287,21 @@ graph TD
 
 ---
 
+## Open Non-Conformities (NCRs)
+
+The February 2026 baseline conformity assessment identified 4 open NCRs tracked as GitHub Issues:
+
+| Issue | NCR ID | Article | Severity |
+|-------|--------|---------|----------|
+| [Log retention insufficient (30 days vs 6-month minimum)](../../issues/1) | NCR-001 | Art. 12 | CRITICAL |
+| [Annex IV technical documentation incomplete](../../issues/2) | NCR-002 | Art. 11 | HIGH |
+| [No adversarial robustness testing conducted](../../issues/3) | NCR-003 | Art. 15 | HIGH |
+| [Human-in-the-Loop (HITL) mechanism not deployed](../../issues/4) | NCR-004 | Art. 14 | CRITICAL |
+
+Overall February 2026 conformity score: **15%** → target August 2026: **100%**
+
+---
+
 ## Repository Structure
 
 ```
@@ -144,7 +328,8 @@ EU-AI-Act/
 │   ├── test_fria_agent.py
 │   └── test_conformity_bot.py
 ├── docs/
-│   └── architecture.md             # Agent architecture diagrams
+│   ├── architecture.md             # Agent architecture diagrams
+│   └── decisions.md                # Key product decisions + trade-offs
 ├── artifacts/                      # HTML compliance artifacts (06–11)
 ├── css/style.css
 ├── index.html ... 05-agents.html   # HTML portfolio pages
@@ -214,21 +399,6 @@ python -m agents.conformity_bot
 
 ---
 
-## Open Non-Conformities (NCRs)
-
-The February 2026 baseline conformity assessment identified 4 open NCRs tracked as GitHub Issues:
-
-| Issue | NCR ID | Article | Severity |
-|-------|--------|---------|----------|
-| [Log retention insufficient (30 days vs 6-month minimum)](../../issues/1) | NCR-001 | Art. 12 | CRITICAL |
-| [Annex IV technical documentation incomplete](../../issues/2) | NCR-002 | Art. 11 | HIGH |
-| [No adversarial robustness testing conducted](../../issues/3) | NCR-003 | Art. 15 | HIGH |
-| [Human-in-the-Loop (HITL) mechanism not deployed](../../issues/4) | NCR-004 | Art. 14 | CRITICAL |
-
-Overall February 2026 conformity score: **15%** → target August 2026: **100%**
-
----
-
 ## Regulatory Basis
 
 - [Regulation (EU) 2024/1689 — EU AI Act](https://artificialintelligenceact.eu/)
@@ -242,7 +412,7 @@ Overall February 2026 conformity score: **15%** → target August 2026: **100%**
 
 ## Disclaimer
 
-FinPulse NL B.V. is a **fictional company**. This portfolio is a hypothetical educational exercise illustrating how a Dutch FinTech might approach EU AI Act compliance. It does not constitute legal advice. Regulatory interpretations reflect the EU AI Act as in force in February 2026.
+FinPulse NL B.V. is a **fictional company** used for illustrative purposes. This is a programme proposal demonstrating how a Dutch FinTech can approach EU AI Act compliance. It does not constitute legal advice. Regulatory interpretations reflect the EU AI Act as in force in February 2026.
 
 ---
 
