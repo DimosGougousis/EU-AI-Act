@@ -1,0 +1,9 @@
+# EU AI Act Compliance Agents — pinned dependencies
+# Install: pip install -e ".[dev]"
+
+anthropic==0.40.0
+apscheduler==3.10.4
+
+# Development / testing
+pytest==8.3.4
+pytest-mock==3.14.0
