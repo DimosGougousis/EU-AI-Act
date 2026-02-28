@@ -1,114 +1,126 @@
 [
   {
-    "name": "check_document_exists",
-    "description": "Check if a required compliance document exists in the repository and assess its completeness.",
-    "input_schema": {
-      "type": "object",
-      "properties": {
-        "document_type": {
-          "type": "string",
-          "enum": [
-            "risk_management_system",
-            "technical_documentation",
-            "bias_assessment",
-            "fria",
-            "conformity_declaration",
-            "human_oversight_procedure",
-            "logging_configuration"
-          ]
-        },
-        "repository_path": {
-          "type": "string",
-          "description": "Path or URI to the compliance document repository"
-        },
-        "minimum_completeness": {
-          "type": "number",
-          "description": "Minimum completeness percentage required (0-100)",
-          "default": 80
-        }
-      },
-      "required": ["document_type", "repository_path"]
-    }
-  },
-  {
-    "name": "check_log_retention",
-    "description": "Query logging system to verify retention period meets the EU AI Act Article 12 minimum of 6 months.",
-    "input_schema": {
-      "type": "object",
-      "properties": {
-        "log_endpoint": {
-          "type": "string",
-          "description": "API endpoint or URI for the logging system"
-        },
-        "system_id": {
-          "type": "string",
-          "description": "AI system identifier in the logging system"
-        },
-        "required_retention_days": {
-          "type": "integer",
-          "description": "Minimum retention in days (default: 183 for 6 months)",
-          "default": 183
-        }
-      },
-      "required": ["log_endpoint", "system_id"]
-    }
-  },
-  {
-    "name": "verify_oversight_implementation",
-    "description": "Verify that Article 14 human oversight mechanisms are implemented and operational.",
-    "input_schema": {
-      "type": "object",
-      "properties": {
-        "system_id": {"type": "string"},
-        "checks": {
-          "type": "array",
-          "items": {
+    "type": "function",
+    "function": {
+      "name": "check_document_exists",
+      "description": "Check if a required compliance document exists in the repository and assess its completeness.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "document_type": {
             "type": "string",
             "enum": [
-              "override_mechanism_present",
-              "override_logging_active",
-              "shap_explanation_displayed",
-              "training_records_complete",
-              "hitl_workflow_deployed"
+              "risk_management_system",
+              "technical_documentation",
+              "bias_assessment",
+              "fria",
+              "conformity_declaration",
+              "human_oversight_procedure",
+              "logging_configuration"
             ]
+          },
+          "repository_path": {
+            "type": "string",
+            "description": "Path or URI to the compliance document repository"
+          },
+          "minimum_completeness": {
+            "type": "number",
+            "description": "Minimum completeness percentage required (0-100)",
+            "default": 80
           }
-        }
-      },
-      "required": ["system_id", "checks"]
+        },
+        "required": ["document_type", "repository_path"]
+      }
     }
   },
   {
-    "name": "generate_conformity_report",
-    "description": "Generate structured Annex VI conformity assessment report with per-article status, NCRs, and overall score.",
-    "input_schema": {
-      "type": "object",
-      "properties": {
-        "check_results": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "article": {"type": "string"},
-              "obligation": {"type": "string"},
-              "status": {
-                "type": "string",
-                "enum": ["PASS", "PARTIAL", "FAIL", "NOT_APPLICABLE"]
-              },
-              "evidence": {"type": "string"},
-              "notes": {"type": "string"}
+    "type": "function",
+    "function": {
+      "name": "check_log_retention",
+      "description": "Query logging system to verify retention period meets the EU AI Act Article 12 minimum of 6 months.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "log_endpoint": {
+            "type": "string",
+            "description": "API endpoint or URI for the logging system"
+          },
+          "system_id": {
+            "type": "string",
+            "description": "AI system identifier in the logging system"
+          },
+          "required_retention_days": {
+            "type": "integer",
+            "description": "Minimum retention in days (default: 183 for 6 months)",
+            "default": 183
+          }
+        },
+        "required": ["log_endpoint", "system_id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "verify_oversight_implementation",
+      "description": "Verify that Article 14 human oversight mechanisms are implemented and operational.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "system_id": {"type": "string"},
+          "checks": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "override_mechanism_present",
+                "override_logging_active",
+                "shap_explanation_displayed",
+                "training_records_complete",
+                "hitl_workflow_deployed"
+              ]
             }
           }
         },
-        "overall_score": {
-          "type": "number",
-          "description": "Percentage of obligations met (0-100)"
+        "required": ["system_id", "checks"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "generate_conformity_report",
+      "description": "Generate structured Annex VI conformity assessment report with per-article status, NCRs, and overall score.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "check_results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "article": {"type": "string"},
+                "obligation": {"type": "string"},
+                "status": {
+                  "type": "string",
+                  "enum": ["PASS", "PARTIAL", "FAIL", "NOT_APPLICABLE"]
+                },
+                "evidence": {"type": "string"},
+                "notes": {"type": "string"}
+              }
+            }
+          },
+          "overall_score": {
+            "type": "number",
+            "description": "Percentage of obligations met (0-100)"
+          },
+          "output_path": {
+            "type": "string",
+            "description": "Path to save the conformity report"
+          }
         },
-        "output_path": {
-          "type": "string",
-          "description": "Path to save the conformity report"
-        }
-      },
-      "required": ["check_results", "overall_score"]
+        "required": ["check_results", "overall_score"]
+      }
     }
   }
 ]

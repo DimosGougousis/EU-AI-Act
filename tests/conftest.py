@@ -1,12 +1,12 @@
 """
 Shared pytest fixtures for EU AI Act compliance agent tests.
 
-All fixtures are designed to work WITHOUT a live ANTHROPIC_API_KEY.
-The Anthropic client is mocked to return pre-canned tool call responses.
+All fixtures are designed to work WITHOUT a live OPENAI_API_KEY.
+The LLM client is mocked to return pre-canned responses.
 """
 
 import json
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -60,31 +60,41 @@ def sample_model_card():
     }
 
 
-@pytest.fixture
-def mock_anthropic_end_turn_response():
+def _make_llm_response(json_payload: dict):
     """
-    Factory fixture: returns a mock Anthropic response with stop_reason='end_turn'
-    and a JSON text block.
+    Build a mock chat.completions response that returns no tool calls
+    and a JSON content string — simulating a final answer turn.
     """
-    def _make_response(json_payload: dict):
-        block = MagicMock()
-        block.type = "text"
-        block.text = json.dumps(json_payload)
-        response = MagicMock()
-        response.stop_reason = "end_turn"
-        response.content = [block]
-        return response
-    return _make_response
+    mock_message = MagicMock()
+    mock_message.tool_calls = None
+    mock_message.content = json.dumps(json_payload)
+
+    mock_choice = MagicMock()
+    mock_choice.finish_reason = "stop"
+    mock_choice.message = mock_message
+
+    mock_response = MagicMock()
+    mock_response.choices = [mock_choice]
+    return mock_response
 
 
 @pytest.fixture
-def mock_anthropic_client(mock_anthropic_end_turn_response):
+def mock_llm_final_response():
     """
-    Mock anthropic.Anthropic() client that immediately returns end_turn
-    with a minimal valid payload. Patches the client at the module level.
+    Factory fixture: returns a mock LLM response with no tool_calls
+    and a JSON content string (final answer, no further tool use).
+    """
+    return _make_llm_response
+
+
+@pytest.fixture
+def mock_llm_client():
+    """
+    Mock LLM client (openai.OpenAI()) that immediately returns a final
+    answer with a minimal valid payload. Patches at the module level.
     """
     client = MagicMock()
-    client.messages.create.return_value = mock_anthropic_end_turn_response(
+    client.chat.completions.create.return_value = _make_llm_response(
         {"risk_tier": "HIGH_RISK", "legal_basis": "Annex III, Point 5(b)"}
     )
     return client

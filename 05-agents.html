@@ -194,7 +194,7 @@
   <div class="page-header-inner">
     <h1>AI Agents for Compliance Automation</h1>
     <p class="subtitle">How FinPulse NL B.V. can leverage AI agents to automate, accelerate, and continuously execute EU AI Act compliance tasks.</p>
-    <p class="meta">EU AI Act Assessment | Section 05 | Built on Anthropic Claude Agent SDK</p>
+    <p class="meta">EU AI Act Assessment | Section 05 | Built on OpenAI API</p>
   </div>
 </div>
 
@@ -365,12 +365,12 @@
         </div>
       </div>
 
-      <h4>Agent Architecture (Claude SDK)</h4>
+      <h4>Agent Architecture (OpenAI Tool Use)</h4>
       <div class="code-block">
         <span class="code-lang">Python</span>
-<pre><span class="kw">import</span> anthropic
+<pre><span class="kw">import</span> openai
 
-client = anthropic.Anthropic()
+client = openai.OpenAI()
 
 <span class="cm"># Tool definitions for ClassifyBot</span>
 tools = [
@@ -417,7 +417,7 @@ tools = [
 
     <span class="kw">while</span> <span class="kw">True</span>:
         response = client.messages.create(
-            model=<span class="str">"claude-opus-4-6"</span>,
+            model=<span class="str">"gpt-4o"</span>,
             max_tokens=<span class="num">4096</span>,
             tools=tools,
             messages=messages,
@@ -576,10 +576,10 @@ tools = [
       <h4>Scheduled Agent Configuration</h4>
       <div class="code-block">
         <span class="code-lang">Python</span>
-<pre><span class="kw">import</span> anthropic
+<pre><span class="kw">import</span> openai
 <span class="kw">from</span> apscheduler.schedulers.blocking <span class="kw">import</span> BlockingScheduler
 
-client = anthropic.Anthropic()
+client = openai.OpenAI()
 
 tools = [
     {
@@ -637,7 +637,7 @@ scheduler = BlockingScheduler()
 @scheduler.scheduled_job(<span class="str">'cron'</span>, day_of_week=<span class="str">'mon'</span>, hour=<span class="num">7</span>, timezone=<span class="str">'Europe/Amsterdam'</span>)
 <span class="kw">def</span> <span class="fn">run_bias_watch</span>():
     response = client.messages.create(
-        model=<span class="str">"claude-opus-4-6"</span>,
+        model=<span class="str">"gpt-4o"</span>,
         max_tokens=<span class="num">8096</span>,
         tools=tools,
         system=<span class="str">"You are BiasWatchAgent. Each week, query the previous 7 days of "
@@ -888,7 +888,7 @@ scheduler = BlockingScheduler()
   │  ├── Schedule: Monthly 1st         → ConformityBot runs             │
   │  └── Event: New deployment         → FRIAAgent runs                 │
   │                                                                     │
-  │  Agents (Claude claude-opus-4-6 / claude-sonnet-4-6):               │
+  │  Agents (gpt-4o / configurable via AI_MODEL):               │
   │  ├── ClassifyBot  ──→ AI Inventory + EU AI Act Regulation DB        │
   │  ├── DocDraftAgent ─→ MLflow Registry + DataHub Catalog             │
   │  ├── BiasWatchAgent → Decision Log DB + Incident Ticketing (Jira)   │
@@ -930,7 +930,7 @@ scheduler = BlockingScheduler()
     <div>
       <h4>Agent SDK Reference</h4>
       <ul>
-        <li>Anthropic Claude claude-opus-4-6</li>
+        <li>OpenAI gpt-4o</li>
         <li>Tool use / agentic loop</li>
         <li>Scheduled execution (APScheduler)</li>
         <li>Structured JSON outputs</li>

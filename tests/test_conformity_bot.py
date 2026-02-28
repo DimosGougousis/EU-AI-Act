@@ -107,10 +107,10 @@ class TestRunConformityCheck:
         mock_block.type = "text"
         mock_block.text = json.dumps(payload)
         mock_response = MagicMock()
-        mock_response.stop_reason = "end_turn"
+        mock_message = MagicMock(); message.tool_calls = None; message.content = json.dumps(payload); choice = MagicMock(); choice.finish_reason = "stop"; choice.message = message; mock_response.choices = [choice]
         mock_response.content = [mock_block]
 
-        with patch("agents.conformity_bot.anthropic.Anthropic") as mock_client_class:
+        with patch("agents.conformity_bot.openai.OpenAI") as mock_client_class:
             mock_client_class.return_value.messages.create.return_value = mock_response
             result = run_conformity_check()
 
@@ -134,10 +134,10 @@ class TestRunConformityCheck:
         mock_block.type = "text"
         mock_block.text = json.dumps(payload)
         mock_response = MagicMock()
-        mock_response.stop_reason = "end_turn"
+        mock_message = MagicMock(); message.tool_calls = None; message.content = json.dumps(payload); choice = MagicMock(); choice.finish_reason = "stop"; choice.message = message; mock_response.choices = [choice]
         mock_response.content = [mock_block]
 
-        with patch("agents.conformity_bot.anthropic.Anthropic") as mock_client_class:
+        with patch("agents.conformity_bot.openai.OpenAI") as mock_client_class:
             mock_client_class.return_value.messages.create.return_value = mock_response
             result = run_conformity_check()
 

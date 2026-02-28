@@ -31,7 +31,7 @@ import os
 from datetime import date, timedelta
 from pathlib import Path
 
-import anthropic
+import openai
 
 try:
     from apscheduler.schedulers.blocking import BlockingScheduler
@@ -93,7 +93,6 @@ def _load_tools() -> list:
 
 def _process_tool_call(tool_name: str, tool_input: dict) -> str:
     if tool_name == "query_decision_log":
-        # Mock data representing one week of PulseCredit decisions
         return json.dumps({
             "period": f"{tool_input.get('start_date')} to {tool_input.get('end_date')}",
             "total_decisions": 347,
@@ -118,10 +117,8 @@ def _process_tool_call(tool_name: str, tool_input: dict) -> str:
     if tool_name == "compute_fairness_metrics":
         data = tool_input.get("data", {})
         demo = data.get("demographics", {})
-
         results = {}
 
-        # Gender parity
         g = demo.get("gender", {})
         if g.get("male") and g.get("female"):
             results["demographic_parity_gender"] = round(
@@ -131,7 +128,6 @@ def _process_tool_call(tool_name: str, tool_input: dict) -> str:
                 ), 4,
             )
 
-        # Age parity (18-30 vs 31-54)
         a = demo.get("age_bracket", {})
         if a.get("18-30") and a.get("31-54"):
             results["demographic_parity_age_1830"] = round(
@@ -141,7 +137,6 @@ def _process_tool_call(tool_name: str, tool_input: dict) -> str:
                 ), 4,
             )
 
-        # Nationality parity
         n = demo.get("nationality", {})
         if n.get("dutch") and n.get("non_dutch"):
             results["demographic_parity_nationality"] = round(
@@ -153,10 +148,8 @@ def _process_tool_call(tool_name: str, tool_input: dict) -> str:
 
         results["psi"] = data.get("psi", 0)
 
-        # Threshold checks
         breaches = []
         for metric, value in results.items():
-            threshold_key = metric.split("_")[0] + "_" + metric.split("_")[1] if "_" in metric else metric
             threshold = THRESHOLDS.get("demographic_parity" if "parity" in metric else "psi")
             if threshold and value > threshold:
                 breaches.append({
@@ -199,81 +192,74 @@ def run_bias_watch() -> dict:
     Returns:
         dict: Fairness report summary with metrics, breaches, and report path
     """
-    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", "test"))
+    client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY", "test"))
     tools = _load_tools()
 
     today = date.today()
     start = (today - timedelta(days=7)).isoformat()
     end = today.isoformat()
 
-    messages = [{
-        "role": "user",
-        "content": (
-            f"Run weekly bias monitoring report for PulseCredit. "
-            f"Date range: {start} to {end}. "
-            f"Query decision log, compute all fairness metrics, "
-            f"create incident tickets for any threshold breaches, "
-            f"and publish the report."
-        ),
-    }]
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {
+            "role": "user",
+            "content": (
+                f"Run weekly bias monitoring report for PulseCredit. "
+                f"Date range: {start} to {end}. "
+                f"Query decision log, compute all fairness metrics, "
+                f"create incident tickets for any threshold breaches, "
+                f"and publish the report."
+            ),
+        },
+    ]
 
     final_result = {}
 
     while True:
-        response = client.messages.create(
-            model="claude-opus-4-6",
+        response = client.chat.completions.create(
+            model=os.environ.get("AI_MODEL", "gpt-4o"),
             max_tokens=8096,
             tools=tools,
             messages=messages,
-            system=SYSTEM_PROMPT,
         )
 
-        if response.stop_reason == "end_turn":
-            for block in response.content:
-                if hasattr(block, "text"):
-                    try:
-                        final_result = json.loads(block.text)
-                    except (json.JSONDecodeError, AttributeError):
-                        final_result = {"summary": block.text}
+        msg = response.choices[0].message
+
+        if not msg.tool_calls:
+            try:
+                final_result = json.loads(msg.content)
+            except (json.JSONDecodeError, TypeError):
+                final_result = {"summary": msg.content}
             return final_result
 
-        tool_results = []
-        for block in response.content:
-            if block.type == "tool_use":
-                result = _process_tool_call(block.name, block.input)
-                if block.name == "publish_fairness_report":
-                    try:
-                        final_result = json.loads(result)
-                    except json.JSONDecodeError:
-                        pass
-                tool_results.append({
-                    "type": "tool_result",
-                    "tool_use_id": block.id,
-                    "content": result,
-                })
+        messages.append(msg)
 
-        messages.append({"role": "assistant", "content": response.content})
-        messages.append({"role": "user", "content": tool_results})
+        for tc in msg.tool_calls:
+            result = _process_tool_call(tc.function.name, json.loads(tc.function.arguments))
+            if tc.function.name == "publish_fairness_report":
+                try:
+                    final_result = json.loads(result)
+                except json.JSONDecodeError:
+                    pass
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tc.id,
+                "content": result,
+            })
 
 
 def start_scheduler():
     """Start the APScheduler to run BiasWatchAgent every Monday at 07:00 Amsterdam time."""
     if not APSCHEDULER_AVAILABLE:
-        raise ImportError("APScheduler is required: pip install apscheduler")
+        raise ImportError("apscheduler is required for scheduled execution. Run: pip install apscheduler")
 
-    scheduler = BlockingScheduler()
-
-    @scheduler.scheduled_job("cron", day_of_week="mon", hour=7, timezone="Europe/Amsterdam")
-    def scheduled_run():
-        print("BiasWatchAgent: Starting weekly bias monitoring run...")
-        result = run_bias_watch()
-        print(f"BiasWatchAgent: Run complete — {result}")
-
-    print("BiasWatchAgent scheduler started. Runs every Monday at 07:00 Amsterdam time.")
+    scheduler = BlockingScheduler(timezone="Europe/Amsterdam")
+    scheduler.add_job(run_bias_watch, "cron", day_of_week="mon", hour=7, minute=0)
+    print("BiasWatchAgent scheduler started — runs every Monday 07:00 Europe/Amsterdam")
     scheduler.start()
 
 
 if __name__ == "__main__":
-    print("Running BiasWatchAgent (single run)...")
+    print("Running BiasWatchAgent — weekly bias monitoring check...")
     result = run_bias_watch()
     print(json.dumps(result, indent=2))

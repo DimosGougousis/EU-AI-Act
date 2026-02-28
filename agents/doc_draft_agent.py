@@ -30,7 +30,7 @@ import json
 import os
 from pathlib import Path
 
-import anthropic
+import openai
 
 SCHEMAS_DIR = Path(__file__).parent / "schemas"
 
@@ -155,59 +155,58 @@ def draft_technical_documentation(
     Returns:
         dict: Documentation draft summary with completeness % and action items
     """
-    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", "test"))
+    client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY", "test"))
     tools = _load_tools()
 
-    messages = [{
-        "role": "user",
-        "content": (
-            f"Generate an EU AI Act Annex IV technical documentation draft.\n"
-            f"Model Registry: {registry_uri}\n"
-            f"Data Catalog: {catalog_ref}\n"
-            f"Risk Tier: {risk_tier}\n"
-            f"System Owner: {system_owner}\n"
-            f"Target Date: {target_date}\n"
-            f"Additional Context: {additional_context or 'None'}"
-        ),
-    }]
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {
+            "role": "user",
+            "content": (
+                f"Generate an EU AI Act Annex IV technical documentation draft.\n"
+                f"Model Registry: {registry_uri}\n"
+                f"Data Catalog: {catalog_ref}\n"
+                f"Risk Tier: {risk_tier}\n"
+                f"System Owner: {system_owner}\n"
+                f"Target Date: {target_date}\n"
+                f"Additional Context: {additional_context or 'None'}"
+            ),
+        },
+    ]
 
     final_result = {}
 
     while True:
-        response = client.messages.create(
-            model="claude-opus-4-6",
+        response = client.chat.completions.create(
+            model=os.environ.get("AI_MODEL", "gpt-4o"),
             max_tokens=8096,
             tools=tools,
             messages=messages,
-            system=SYSTEM_PROMPT,
         )
 
-        if response.stop_reason == "end_turn":
-            for block in response.content:
-                if hasattr(block, "text"):
-                    try:
-                        final_result = json.loads(block.text)
-                    except (json.JSONDecodeError, AttributeError):
-                        final_result = {"summary": block.text}
+        msg = response.choices[0].message
+
+        if not msg.tool_calls:
+            try:
+                final_result = json.loads(msg.content)
+            except (json.JSONDecodeError, TypeError):
+                final_result = {"summary": msg.content}
             return final_result
 
-        tool_results = []
-        for block in response.content:
-            if block.type == "tool_use":
-                result = _process_tool_call(block.name, block.input)
-                if block.name == "export_documentation_draft":
-                    try:
-                        final_result = json.loads(result)
-                    except json.JSONDecodeError:
-                        pass
-                tool_results.append({
-                    "type": "tool_result",
-                    "tool_use_id": block.id,
-                    "content": result,
-                })
+        messages.append(msg)
 
-        messages.append({"role": "assistant", "content": response.content})
-        messages.append({"role": "user", "content": tool_results})
+        for tc in msg.tool_calls:
+            result = _process_tool_call(tc.function.name, json.loads(tc.function.arguments))
+            if tc.function.name == "export_documentation_draft":
+                try:
+                    final_result = json.loads(result)
+                except json.JSONDecodeError:
+                    pass
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tc.id,
+                "content": result,
+            })
 
 
 if __name__ == "__main__":

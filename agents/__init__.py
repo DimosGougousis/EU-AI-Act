@@ -1,7 +1,7 @@
 """
 EU AI Act Compliance Automation Agents — FinPulse NL B.V.
 
-Five agentic tools built on the Anthropic Claude SDK to automate
+Five agentic tools built on the OpenAI API to automate
 high-effort compliance tasks under Regulation (EU) 2024/1689.
 
 Agents:

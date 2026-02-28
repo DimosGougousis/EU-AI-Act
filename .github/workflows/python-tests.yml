@@ -31,5 +31,5 @@ jobs:
       - name: Run pytest
         run: pytest tests/ -v --tb=short
         env:
-          # Tests mock the Anthropic client — no real API key needed
-          ANTHROPIC_API_KEY: test
+          # Tests mock the LLM client — no real API key needed
+          OPENAI_API_KEY: test

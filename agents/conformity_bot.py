@@ -35,7 +35,7 @@ import json
 import os
 from pathlib import Path
 
-import anthropic
+import openai
 
 SCHEMAS_DIR = Path(__file__).parent / "schemas"
 
@@ -199,7 +199,7 @@ def run_conformity_check(
     Returns:
         dict: Conformity report with per-article status, NCRs, and overall score
     """
-    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", "test"))
+    client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY", "test"))
     tools = _load_tools()
 
     target_articles = articles or [o["article"] for o in OBLIGATIONS]
@@ -209,56 +209,55 @@ def run_conformity_check(
         if o["article"] in target_articles
     )
 
-    messages = [{
-        "role": "user",
-        "content": (
-            f"Run a {assessment_type} conformity assessment for {system_id}.\n"
-            f"Repository: {repository_path}\n"
-            f"Logging system: {log_endpoint}\n\n"
-            f"Check all of the following obligations:\n{obligations_str}\n\n"
-            f"For each obligation: check if the required document/evidence exists, "
-            f"verify log retention, verify oversight implementation. "
-            f"Then generate a complete conformity report with NCRs and overall score."
-        ),
-    }]
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {
+            "role": "user",
+            "content": (
+                f"Run a {assessment_type} conformity assessment for {system_id}.\n"
+                f"Repository: {repository_path}\n"
+                f"Logging system: {log_endpoint}\n\n"
+                f"Check all of the following obligations:\n{obligations_str}\n\n"
+                f"For each obligation: check if the required document/evidence exists, "
+                f"verify log retention, verify oversight implementation. "
+                f"Then generate a complete conformity report with NCRs and overall score."
+            ),
+        },
+    ]
 
     final_result = {}
 
     while True:
-        response = client.messages.create(
-            model="claude-opus-4-6",
+        response = client.chat.completions.create(
+            model=os.environ.get("AI_MODEL", "gpt-4o"),
             max_tokens=8096,
             tools=tools,
             messages=messages,
-            system=SYSTEM_PROMPT,
         )
 
-        if response.stop_reason == "end_turn":
-            for block in response.content:
-                if hasattr(block, "text"):
-                    try:
-                        final_result = json.loads(block.text)
-                    except (json.JSONDecodeError, AttributeError):
-                        final_result = {"summary": block.text}
+        msg = response.choices[0].message
+
+        if not msg.tool_calls:
+            try:
+                final_result = json.loads(msg.content)
+            except (json.JSONDecodeError, TypeError):
+                final_result = {"summary": msg.content}
             return final_result
 
-        tool_results = []
-        for block in response.content:
-            if block.type == "tool_use":
-                result = _process_tool_call(block.name, block.input)
-                if block.name == "generate_conformity_report":
-                    try:
-                        final_result = json.loads(result)
-                    except json.JSONDecodeError:
-                        pass
-                tool_results.append({
-                    "type": "tool_result",
-                    "tool_use_id": block.id,
-                    "content": result,
-                })
+        messages.append(msg)
 
-        messages.append({"role": "assistant", "content": response.content})
-        messages.append({"role": "user", "content": tool_results})
+        for tc in msg.tool_calls:
+            result = _process_tool_call(tc.function.name, json.loads(tc.function.arguments))
+            if tc.function.name == "generate_conformity_report":
+                try:
+                    final_result = json.loads(result)
+                except json.JSONDecodeError:
+                    pass
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tc.id,
+                "content": result,
+            })
 
 
 if __name__ == "__main__":

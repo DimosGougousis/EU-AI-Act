@@ -6,7 +6,7 @@
 [![EU AI Act](https://img.shields.io/badge/Regulation-EU%202024%2F1689-003399)](https://artificialintelligenceact.eu/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> A production-grade EU AI Act compliance portfolio for a hypothetical Dutch FinTech — featuring **5 executable compliance automation agents** built on the Anthropic Claude Agent SDK, 11 regulatory artifacts, and a full pytest suite. **No API key needed to run the tests.**
+> A production-grade EU AI Act compliance portfolio for a hypothetical Dutch FinTech — featuring **5 executable compliance automation agents** built on the OpenAI API, 11 regulatory artifacts, and a full pytest suite. **No API key needed to run the tests.**
 
 **[Live Portfolio →](https://dimosGougousis.github.io/EU-AI-Act)**
 
@@ -137,7 +137,7 @@ EU-AI-Act/
 │   ├── fria_agent.py
 │   └── conformity_bot.py
 ├── tests/
-│   ├── conftest.py                 # Shared fixtures (mock Anthropic client)
+│   ├── conftest.py                 # Shared fixtures (mock LLM client)
 │   ├── test_classify_bot.py
 │   ├── test_bias_watch_agent.py
 │   ├── test_doc_draft_agent.py
@@ -178,12 +178,12 @@ pip install -e ".[dev]"
 pytest tests/ -v
 ```
 
-All tests mock the Anthropic client — no `ANTHROPIC_API_KEY` needed. The CI pipeline runs the same command on every push.
+All tests mock the LLM client — no `OPENAI_API_KEY` needed. The CI pipeline runs the same command on every push.
 
-### Running Agents (requires Anthropic API key)
+### Running Agents (requires OpenAI API key)
 
 ```bash
-export ANTHROPIC_API_KEY=your_key_here
+export OPENAI_API_KEY=your_key_here
 
 # Classify a new AI system
 python -m agents.classify_bot
@@ -246,4 +246,4 @@ FinPulse NL B.V. is a **fictional company**. This portfolio is a hypothetical ed
 
 ---
 
-*EU AI Act Compliance Portfolio — February 2026 | Built with [Anthropic Claude Agent SDK](https://docs.anthropic.com/)*
+*EU AI Act Compliance Portfolio — February 2026 | Built with [OpenAI API](https://platform.openai.com/docs)*

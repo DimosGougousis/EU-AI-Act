@@ -2,7 +2,7 @@
 
 ## Overview
 
-FinPulse's compliance automation platform consists of five specialised agents built on the **Anthropic Claude Agent SDK** (`claude-opus-4-6`). Each agent handles a specific EU AI Act obligation, connects to internal systems via tool use, and produces structured outputs for human review.
+FinPulse's compliance automation platform consists of five specialised agents built on the **OpenAI API** (`gpt-4o`). Each agent handles a specific EU AI Act obligation, connects to internal systems via tool use, and produces structured outputs for human review.
 
 ---
 
@@ -15,7 +15,7 @@ User / Trigger
       │
       ▼
 ┌─────────────────────────────────────────┐
-│         claude-opus-4-6                 │
+│         gpt-4o                 │
 │                                         │
 │  1. Receive task description            │
 │  2. Select tool(s) to call              │
@@ -39,7 +39,7 @@ Compliance Repository (SharePoint / S3)
 
 **Trigger:** New AI system registered in AI inventory
 **Article:** Art. 6 + Annex III
-**Model:** `claude-opus-4-6`
+**Model:** `gpt-4o`
 
 ```
 System Description
@@ -63,7 +63,7 @@ System Description
 
 **Trigger:** Model deployed or significant update
 **Article:** Art. 11, Annex IV
-**Model:** `claude-opus-4-6`
+**Model:** `gpt-4o`
 
 ```
 MLflow Registry URI + DataHub Catalog Ref
@@ -87,7 +87,7 @@ MLflow Registry URI + DataHub Catalog Ref
 
 **Trigger:** Every Monday 07:00 Europe/Amsterdam (APScheduler)
 **Article:** Art. 10(4)
-**Model:** `claude-opus-4-6`
+**Model:** `gpt-4o`
 
 ```
 Weekly Cron (Mon 07:00 CET)
@@ -114,7 +114,7 @@ Weekly Cron (Mon 07:00 CET)
 
 **Trigger:** New AI system deployment or significant update
 **Article:** Art. 27
-**Model:** `claude-opus-4-6`
+**Model:** `gpt-4o`
 
 ```
 System Description + Affected Population + DPIA Reference
@@ -143,7 +143,7 @@ System Description + Affected Population + DPIA Reference
 
 **Trigger:** 1st of each month + pre-milestone reviews
 **Article:** Art. 43, Annex VI
-**Model:** `claude-opus-4-6`
+**Model:** `gpt-4o`
 
 ```
 System ID + Repository Path + Log Endpoint
@@ -185,7 +185,7 @@ System ID + Repository Path + Log Endpoint
 │  ├── Schedule: Monthly 1st             → ConformityBot             │
 │  └── Event: New deployment             → FRIAAgent                 │
 │                                                                     │
-│  Agents (claude-opus-4-6):                                          │
+│  Agents (gpt-4o):                                          │
 │  ├── ClassifyBot  ──► AI Inventory + EU AI Act Regulation DB       │
 │  ├── DocDraftAgent ─► MLflow Registry + DataHub Catalog            │
 │  ├── BiasWatchAgent → Decision Log DB + Incident Ticketing (Jira)  │

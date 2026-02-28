@@ -20,7 +20,7 @@ SCHEMAS_DIR = Path(__file__).parent.parent / "agents" / "schemas"
 # ─── Schema validation ────────────────────────────────────────────────────────
 
 class TestClassifyBotToolSchemas:
-    """Tool schema tests require no API key and no imports of anthropic."""
+    """Tool schema tests require no API key and no imports of openai."""
 
     def test_schema_file_exists(self):
         assert (SCHEMAS_DIR / "classify_bot_tools.json").exists(), \
@@ -83,10 +83,10 @@ class TestClassifySystemFunction:
             "confidence": 0.97,
         })
         mock_response = MagicMock()
-        mock_response.stop_reason = "end_turn"
+        mock_message = MagicMock(); message.tool_calls = None; message.content = json.dumps(payload); choice = MagicMock(); choice.finish_reason = "stop"; choice.message = message; mock_response.choices = [choice]
         mock_response.content = [mock_block]
 
-        with patch("agents.classify_bot.anthropic.Anthropic") as mock_client_class:
+        with patch("agents.classify_bot.openai.OpenAI") as mock_client_class:
             mock_client_class.return_value.messages.create.return_value = mock_response
             result = classify_system(sample_ai_system_description)
 
@@ -105,10 +105,10 @@ class TestClassifySystemFunction:
         mock_block.type = "text"
         mock_block.text = json.dumps(expected_payload)
         mock_response = MagicMock()
-        mock_response.stop_reason = "end_turn"
+        mock_message = MagicMock(); message.tool_calls = None; message.content = json.dumps(payload); choice = MagicMock(); choice.finish_reason = "stop"; choice.message = message; mock_response.choices = [choice]
         mock_response.content = [mock_block]
 
-        with patch("agents.classify_bot.anthropic.Anthropic") as mock_client_class:
+        with patch("agents.classify_bot.openai.OpenAI") as mock_client_class:
             mock_client_class.return_value.messages.create.return_value = mock_response
             result = classify_system(sample_ai_system_description)
 
@@ -127,10 +127,10 @@ class TestClassifySystemFunction:
         mock_block.type = "text"
         mock_block.text = json.dumps(expected_payload)
         mock_response = MagicMock()
-        mock_response.stop_reason = "end_turn"
+        mock_message = MagicMock(); message.tool_calls = None; message.content = json.dumps(payload); choice = MagicMock(); choice.finish_reason = "stop"; choice.message = message; mock_response.choices = [choice]
         mock_response.content = [mock_block]
 
-        with patch("agents.classify_bot.anthropic.Anthropic") as mock_client_class:
+        with patch("agents.classify_bot.openai.OpenAI") as mock_client_class:
             mock_client_class.return_value.messages.create.return_value = mock_response
             result = classify_system(sample_fraud_system_description)
 

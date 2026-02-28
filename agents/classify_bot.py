@@ -31,7 +31,7 @@ import json
 import os
 from pathlib import Path
 
-import anthropic
+import openai
 
 SCHEMAS_DIR = Path(__file__).parent / "schemas"
 
@@ -142,55 +142,54 @@ def classify_system(system_description: dict) -> dict:
     Returns:
         dict: Classification report with risk_tier, legal_basis, obligations, confidence
     """
-    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", "test"))
+    client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY", "test"))
     tools = _load_tools()
 
-    messages = [{
-        "role": "user",
-        "content": (
-            f"Classify this AI system under EU AI Act (2024/1689): "
-            f"{json.dumps(system_description, indent=2)}"
-        ),
-    }]
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {
+            "role": "user",
+            "content": (
+                f"Classify this AI system under EU AI Act (2024/1689): "
+                f"{json.dumps(system_description, indent=2)}"
+            ),
+        },
+    ]
 
     final_report = {}
 
     while True:
-        response = client.messages.create(
-            model="claude-opus-4-6",
+        response = client.chat.completions.create(
+            model=os.environ.get("AI_MODEL", "gpt-4o"),
             max_tokens=4096,
             tools=tools,
             messages=messages,
-            system=SYSTEM_PROMPT,
         )
 
-        if response.stop_reason == "end_turn":
-            for block in response.content:
-                if hasattr(block, "text"):
-                    try:
-                        final_report = json.loads(block.text)
-                    except (json.JSONDecodeError, AttributeError):
-                        final_report = {"raw_output": block.text}
+        msg = response.choices[0].message
+
+        if not msg.tool_calls:
+            try:
+                final_report = json.loads(msg.content)
+            except (json.JSONDecodeError, TypeError):
+                final_report = {"raw_output": msg.content}
             return final_report
 
-        # Process tool calls
-        tool_results = []
-        for block in response.content:
-            if block.type == "tool_use":
-                result = _process_tool_call(block.name, block.input)
-                if block.name == "generate_classification_report":
-                    try:
-                        final_report = json.loads(result)
-                    except json.JSONDecodeError:
-                        pass
-                tool_results.append({
-                    "type": "tool_result",
-                    "tool_use_id": block.id,
-                    "content": result,
-                })
+        # Append assistant message (contains tool_calls)
+        messages.append(msg)
 
-        messages.append({"role": "assistant", "content": response.content})
-        messages.append({"role": "user", "content": tool_results})
+        for tc in msg.tool_calls:
+            result = _process_tool_call(tc.function.name, json.loads(tc.function.arguments))
+            if tc.function.name == "generate_classification_report":
+                try:
+                    final_report = json.loads(result)
+                except json.JSONDecodeError:
+                    pass
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tc.id,
+                "content": result,
+            })
 
 
 if __name__ == "__main__":

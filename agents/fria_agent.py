@@ -31,7 +31,7 @@ import json
 import os
 from pathlib import Path
 
-import anthropic
+import openai
 
 SCHEMAS_DIR = Path(__file__).parent / "schemas"
 
@@ -210,62 +210,61 @@ def generate_fria(
     Returns:
         dict: FRIA report with rights assessments, mitigations, and residual risks
     """
-    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", "test"))
+    client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY", "test"))
     tools = _load_tools()
 
-    messages = [{
-        "role": "user",
-        "content": (
-            f"Generate an Article 27 Fundamental Rights Impact Assessment.\n"
-            f"System: {system_name}\n"
-            f"Affected Population: {affected_population}\n"
-            f"Risk Tier: {risk_tier}\n"
-            f"GDPR DPIA Reference: {dpia_reference or 'None'}\n"
-            f"Sensitive Groups: {', '.join(sensitive_groups or [])}\n\n"
-            f"Assess all required rights: {', '.join(REQUIRED_RIGHTS)}. "
-            f"For each right: assess impact, propose mitigations, determine residual risk. "
-            f"Cross-reference with GDPR DPIA if provided. "
-            f"Then generate the complete FRIA report."
-        ),
-    }]
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {
+            "role": "user",
+            "content": (
+                f"Generate an Article 27 Fundamental Rights Impact Assessment.\n"
+                f"System: {system_name}\n"
+                f"Affected Population: {affected_population}\n"
+                f"Risk Tier: {risk_tier}\n"
+                f"GDPR DPIA Reference: {dpia_reference or 'None'}\n"
+                f"Sensitive Groups: {', '.join(sensitive_groups or [])}\n\n"
+                f"Assess all required rights: {', '.join(REQUIRED_RIGHTS)}. "
+                f"For each right: assess impact, propose mitigations, determine residual risk. "
+                f"Cross-reference with GDPR DPIA if provided. "
+                f"Then generate the complete FRIA report."
+            ),
+        },
+    ]
 
     final_result = {}
 
     while True:
-        response = client.messages.create(
-            model="claude-opus-4-6",
+        response = client.chat.completions.create(
+            model=os.environ.get("AI_MODEL", "gpt-4o"),
             max_tokens=8096,
             tools=tools,
             messages=messages,
-            system=SYSTEM_PROMPT,
         )
 
-        if response.stop_reason == "end_turn":
-            for block in response.content:
-                if hasattr(block, "text"):
-                    try:
-                        final_result = json.loads(block.text)
-                    except (json.JSONDecodeError, AttributeError):
-                        final_result = {"summary": block.text}
+        msg = response.choices[0].message
+
+        if not msg.tool_calls:
+            try:
+                final_result = json.loads(msg.content)
+            except (json.JSONDecodeError, TypeError):
+                final_result = {"summary": msg.content}
             return final_result
 
-        tool_results = []
-        for block in response.content:
-            if block.type == "tool_use":
-                result = _process_tool_call(block.name, block.input)
-                if block.name == "generate_fria_report":
-                    try:
-                        final_result = json.loads(result)
-                    except json.JSONDecodeError:
-                        pass
-                tool_results.append({
-                    "type": "tool_result",
-                    "tool_use_id": block.id,
-                    "content": result,
-                })
+        messages.append(msg)
 
-        messages.append({"role": "assistant", "content": response.content})
-        messages.append({"role": "user", "content": tool_results})
+        for tc in msg.tool_calls:
+            result = _process_tool_call(tc.function.name, json.loads(tc.function.arguments))
+            if tc.function.name == "generate_fria_report":
+                try:
+                    final_result = json.loads(result)
+                except json.JSONDecodeError:
+                    pass
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tc.id,
+                "content": result,
+            })
 
 
 if __name__ == "__main__":
