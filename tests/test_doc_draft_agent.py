@@ -37,14 +37,15 @@ class TestDocDraftToolSchemas:
         with open(SCHEMAS_DIR / "doc_draft_tools.json") as f:
             tools = json.load(f)
         for tool in tools:
-            assert "name" in tool
-            assert "description" in tool
-            assert "input_schema" in tool
+            assert tool.get("type") == "function", "Tool must have type 'function' (OpenAI format)"
+            fn = tool.get("function", {})
+            for key in ("name", "description", "parameters"):
+                assert key in fn, f"tool['function'] missing key '{key}'"
 
     def test_expected_tools_present(self):
         with open(SCHEMAS_DIR / "doc_draft_tools.json") as f:
             tools = json.load(f)
-        names = {t["name"] for t in tools}
+        names = {t["function"]["name"] for t in tools}
         expected = {
             "fetch_model_metadata",
             "fetch_data_catalog",
@@ -58,26 +59,34 @@ class TestDocDraftToolSchemas:
 
 class TestDraftTechnicalDocumentation:
 
+    def _make_response(self, payload: dict):
+        """Build a valid mock chat.completions response (no tool calls, JSON content)."""
+        mock_message = MagicMock()
+        mock_message.tool_calls = None
+        mock_message.content = json.dumps(payload)
+        mock_choice = MagicMock()
+        mock_choice.finish_reason = "stop"
+        mock_choice.message = mock_message
+        mock_response = MagicMock()
+        mock_response.choices = [mock_choice]
+        return mock_response
+
     def test_returns_dict(self, sample_model_card):
         from agents.doc_draft_agent import draft_technical_documentation
 
-        mock_block = MagicMock()
-        mock_block.type = "text"
-        mock_block.text = json.dumps({
+        mock_response = self._make_response({
             "status": "DRAFT_SAVED",
             "completeness_pct": 78.0,
             "fields_populated": 22,
             "fields_requiring_human_input": 6,
         })
-        mock_response = MagicMock()
-        mock_message = MagicMock(); message.tool_calls = None; message.content = json.dumps(payload); choice = MagicMock(); choice.finish_reason = "stop"; choice.message = message; mock_response.choices = [choice]
-        mock_response.content = [mock_block]
 
         with patch("agents.doc_draft_agent.openai.OpenAI") as mock_client_class:
-            mock_client_class.return_value.messages.create.return_value = mock_response
+            mock_client_class.return_value.chat.completions.create.return_value = mock_response
             result = draft_technical_documentation(**sample_model_card)
 
         assert isinstance(result, dict)
+        assert result.get("status") == "DRAFT_SAVED"
 
     def test_returns_completeness_pct(self, sample_model_card):
         from agents.doc_draft_agent import draft_technical_documentation
@@ -88,19 +97,15 @@ class TestDraftTechnicalDocumentation:
             "fields_populated": 22,
             "fields_requiring_human_input": 6,
         }
-        mock_block = MagicMock()
-        mock_block.type = "text"
-        mock_block.text = json.dumps(payload)
-        mock_response = MagicMock()
-        mock_message = MagicMock(); message.tool_calls = None; message.content = json.dumps(payload); choice = MagicMock(); choice.finish_reason = "stop"; choice.message = message; mock_response.choices = [choice]
-        mock_response.content = [mock_block]
+        mock_response = self._make_response(payload)
 
         with patch("agents.doc_draft_agent.openai.OpenAI") as mock_client_class:
-            mock_client_class.return_value.messages.create.return_value = mock_response
+            mock_client_class.return_value.chat.completions.create.return_value = mock_response
             result = draft_technical_documentation(**sample_model_card)
 
         assert "completeness_pct" in result
         assert 0 <= result["completeness_pct"] <= 100
+        assert result["completeness_pct"] == 78.0
 
 
 # ─── Mock metadata consistency ─────────────────────────────────────────────────

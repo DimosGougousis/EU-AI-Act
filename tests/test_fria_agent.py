@@ -46,14 +46,15 @@ class TestFRIAToolSchemas:
         with open(SCHEMAS_DIR / "fria_tools.json") as f:
             tools = json.load(f)
         for tool in tools:
-            assert "name" in tool
-            assert "description" in tool
-            assert "input_schema" in tool
+            assert tool.get("type") == "function", "Tool must have type 'function' (OpenAI format)"
+            fn = tool.get("function", {})
+            for key in ("name", "description", "parameters"):
+                assert key in fn, f"tool['function'] missing key '{key}'"
 
     def test_expected_tools_present(self):
         with open(SCHEMAS_DIR / "fria_tools.json") as f:
             tools = json.load(f)
-        names = {t["name"] for t in tools}
+        names = {t["function"]["name"] for t in tools}
         expected = {
             "assess_fundamental_right",
             "propose_mitigation_measures",
@@ -65,8 +66,12 @@ class TestFRIAToolSchemas:
         """assess_fundamental_right tool must accept all 6 required EUCFR rights."""
         with open(SCHEMAS_DIR / "fria_tools.json") as f:
             tools = json.load(f)
-        assess_tool = next(t for t in tools if t["name"] == "assess_fundamental_right")
-        right_enum = assess_tool["input_schema"]["properties"]["right"].get("enum", [])
+        assess_tool = next(
+            t for t in tools if t["function"]["name"] == "assess_fundamental_right"
+        )
+        right_enum = (
+            assess_tool["function"]["parameters"]["properties"]["right"].get("enum", [])
+        )
         assert set(right_enum) >= EXPECTED_RIGHTS, \
             f"Missing rights in enum: {EXPECTED_RIGHTS - set(right_enum)}"
 
@@ -89,55 +94,48 @@ class TestRequiredRightsConstant:
 
 class TestGenerateFRIA:
 
+    def _make_response(self, payload: dict):
+        mock_message = MagicMock()
+        mock_message.tool_calls = None
+        mock_message.content = json.dumps(payload)
+        mock_choice = MagicMock()
+        mock_choice.finish_reason = "stop"
+        mock_choice.message = mock_message
+        mock_response = MagicMock()
+        mock_response.choices = [mock_choice]
+        return mock_response
+
     def test_returns_dict(self):
         from agents.fria_agent import generate_fria
 
-        payload = {
+        mock_response = self._make_response({
             "status": "DRAFT_GENERATED",
             "system": "PulseCredit v2.1",
             "rights_assessed": 6,
-            "residual_risks": {
-                "non_discrimination": "LOW-MEDIUM",
-                "privacy_data_protection": "LOW",
-                "access_to_financial_services": "MEDIUM",
-                "right_to_explanation": "LOW",
-                "human_dignity": "LOW",
-                "freedom_from_manipulation": "LOW",
-            },
-        }
-        mock_block = MagicMock()
-        mock_block.type = "text"
-        mock_block.text = json.dumps(payload)
-        mock_response = MagicMock()
-        mock_message = MagicMock(); message.tool_calls = None; message.content = json.dumps(payload); choice = MagicMock(); choice.finish_reason = "stop"; choice.message = message; mock_response.choices = [choice]
-        mock_response.content = [mock_block]
+            "residual_risks": {r: "LOW" for r in EXPECTED_RIGHTS},
+        })
 
         with patch("agents.fria_agent.openai.OpenAI") as mock_client_class:
-            mock_client_class.return_value.messages.create.return_value = mock_response
+            mock_client_class.return_value.chat.completions.create.return_value = mock_response
             result = generate_fria(
                 system_name="PulseCredit v2.1",
                 affected_population="Dutch consumers aged 18-75",
             )
 
         assert isinstance(result, dict)
+        assert result.get("status") == "DRAFT_GENERATED"
 
     def test_fria_covers_six_rights(self):
         from agents.fria_agent import generate_fria
 
-        payload = {
+        mock_response = self._make_response({
             "status": "DRAFT_GENERATED",
             "rights_assessed": 6,
             "residual_risks": {r: "LOW" for r in EXPECTED_RIGHTS},
-        }
-        mock_block = MagicMock()
-        mock_block.type = "text"
-        mock_block.text = json.dumps(payload)
-        mock_response = MagicMock()
-        mock_message = MagicMock(); message.tool_calls = None; message.content = json.dumps(payload); choice = MagicMock(); choice.finish_reason = "stop"; choice.message = message; mock_response.choices = [choice]
-        mock_response.content = [mock_block]
+        })
 
         with patch("agents.fria_agent.openai.OpenAI") as mock_client_class:
-            mock_client_class.return_value.messages.create.return_value = mock_response
+            mock_client_class.return_value.chat.completions.create.return_value = mock_response
             result = generate_fria(
                 system_name="PulseCredit v2.1",
                 affected_population="Dutch consumers",

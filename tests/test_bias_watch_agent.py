@@ -38,14 +38,15 @@ class TestBiasWatchToolSchemas:
         with open(SCHEMAS_DIR / "bias_watch_tools.json") as f:
             tools = json.load(f)
         for tool in tools:
-            assert "name" in tool
-            assert "description" in tool
-            assert "input_schema" in tool
+            assert tool.get("type") == "function", "Tool must have type 'function' (OpenAI format)"
+            fn = tool.get("function", {})
+            for key in ("name", "description", "parameters"):
+                assert key in fn, f"tool['function'] missing key '{key}'"
 
     def test_expected_tools_present(self):
         with open(SCHEMAS_DIR / "bias_watch_tools.json") as f:
             tools = json.load(f)
-        names = {t["name"] for t in tools}
+        names = {t["function"]["name"] for t in tools}
         expected = {"query_decision_log", "compute_fairness_metrics", "publish_fairness_report"}
         assert expected.issubset(names), f"Missing tools: {expected - names}"
 
@@ -84,7 +85,8 @@ class TestCalculateDemographicParity:
         from agents.bias_watch_agent import calculate_demographic_parity
         result_ab = calculate_demographic_parity(80, 100, 60, 100)
         result_ba = calculate_demographic_parity(60, 100, 80, 100)
-        assert result_ab == result_ba == 0.2
+        assert result_ab == pytest.approx(result_ba)
+        assert result_ab == pytest.approx(0.2)
 
     def test_zero_total_raises_valueerror(self):
         from agents.bias_watch_agent import calculate_demographic_parity
@@ -104,18 +106,21 @@ class TestRunBiasWatch:
     def test_returns_dict(self):
         from agents.bias_watch_agent import run_bias_watch
 
-        mock_block = MagicMock()
-        mock_block.type = "text"
-        mock_block.text = json.dumps({"status": "PUBLISHED", "week": "2026-W09"})
+        mock_message = MagicMock()
+        mock_message.tool_calls = None
+        mock_message.content = json.dumps({"status": "PUBLISHED", "week": "2026-W09"})
+        mock_choice = MagicMock()
+        mock_choice.finish_reason = "stop"
+        mock_choice.message = mock_message
         mock_response = MagicMock()
-        mock_message = MagicMock(); message.tool_calls = None; message.content = json.dumps(payload); choice = MagicMock(); choice.finish_reason = "stop"; choice.message = message; mock_response.choices = [choice]
-        mock_response.content = [mock_block]
+        mock_response.choices = [mock_choice]
 
         with patch("agents.bias_watch_agent.openai.OpenAI") as mock_client_class:
-            mock_client_class.return_value.messages.create.return_value = mock_response
+            mock_client_class.return_value.chat.completions.create.return_value = mock_response
             result = run_bias_watch()
 
         assert isinstance(result, dict)
+        assert result.get("status") == "PUBLISHED"
 
 
 # ─── Scheduler configuration ─────────────────────────────────────────────────

@@ -39,29 +39,32 @@ class TestClassifyBotToolSchemas:
     def test_each_tool_has_required_keys(self):
         with open(SCHEMAS_DIR / "classify_bot_tools.json") as f:
             tools = json.load(f)
-        required_keys = {"name", "description", "input_schema"}
         for tool in tools:
-            missing = required_keys - set(tool.keys())
-            assert not missing, f"Tool '{tool.get('name', '?')}' missing keys: {missing}"
+            assert tool.get("type") == "function", \
+                f"Tool must have type 'function' (OpenAI format)"
+            fn = tool.get("function", {})
+            for key in ("name", "description", "parameters"):
+                assert key in fn, \
+                    f"tool['function'] missing key '{key}' in tool '{fn.get('name', '?')}'"
 
     def test_input_schema_is_object_type(self):
         with open(SCHEMAS_DIR / "classify_bot_tools.json") as f:
             tools = json.load(f)
         for tool in tools:
-            schema = tool.get("input_schema", {})
-            assert schema.get("type") == "object", \
-                f"Tool '{tool['name']}' input_schema.type must be 'object'"
+            params = tool["function"].get("parameters", {})
+            assert params.get("type") == "object", \
+                f"Tool '{tool['function']['name']}' parameters.type must be 'object'"
 
     def test_tool_names_are_unique(self):
         with open(SCHEMAS_DIR / "classify_bot_tools.json") as f:
             tools = json.load(f)
-        names = [t["name"] for t in tools]
+        names = [t["function"]["name"] for t in tools]
         assert len(names) == len(set(names)), "Tool names must be unique"
 
     def test_expected_tools_present(self):
         with open(SCHEMAS_DIR / "classify_bot_tools.json") as f:
             tools = json.load(f)
-        names = {t["name"] for t in tools}
+        names = {t["function"]["name"] for t in tools}
         expected = {"check_annex_iii", "check_fraud_exemption", "generate_classification_report"}
         missing = expected - names
         assert not missing, f"Expected tools not found: {missing}"
@@ -71,23 +74,30 @@ class TestClassifyBotToolSchemas:
 
 class TestClassifySystemFunction:
 
+    def _make_response(self, payload: dict):
+        """Build a valid mock chat.completions response (no tool calls, JSON content)."""
+        mock_message = MagicMock()
+        mock_message.tool_calls = None
+        mock_message.content = json.dumps(payload)
+        mock_choice = MagicMock()
+        mock_choice.finish_reason = "stop"
+        mock_choice.message = mock_message
+        mock_response = MagicMock()
+        mock_response.choices = [mock_choice]
+        return mock_response
+
     def test_returns_dict(self, sample_ai_system_description):
         """classify_system() must return a dict even with mocked API."""
         from agents.classify_bot import classify_system
 
-        mock_block = MagicMock()
-        mock_block.type = "text"
-        mock_block.text = json.dumps({
+        mock_response = self._make_response({
             "risk_tier": "HIGH_RISK",
             "legal_basis": "Annex III, Point 5(b)",
             "confidence": 0.97,
         })
-        mock_response = MagicMock()
-        mock_message = MagicMock(); message.tool_calls = None; message.content = json.dumps(payload); choice = MagicMock(); choice.finish_reason = "stop"; choice.message = message; mock_response.choices = [choice]
-        mock_response.content = [mock_block]
 
         with patch("agents.classify_bot.openai.OpenAI") as mock_client_class:
-            mock_client_class.return_value.messages.create.return_value = mock_response
+            mock_client_class.return_value.chat.completions.create.return_value = mock_response
             result = classify_system(sample_ai_system_description)
 
         assert isinstance(result, dict), "classify_system must return a dict"
@@ -96,46 +106,36 @@ class TestClassifySystemFunction:
         """PulseCredit should be classified as HIGH_RISK."""
         from agents.classify_bot import classify_system
 
-        expected_payload = {
+        mock_response = self._make_response({
             "risk_tier": "HIGH_RISK",
             "legal_basis": "Annex III, Point 5(b)",
             "confidence": 0.97,
-        }
-        mock_block = MagicMock()
-        mock_block.type = "text"
-        mock_block.text = json.dumps(expected_payload)
-        mock_response = MagicMock()
-        mock_message = MagicMock(); message.tool_calls = None; message.content = json.dumps(payload); choice = MagicMock(); choice.finish_reason = "stop"; choice.message = message; mock_response.choices = [choice]
-        mock_response.content = [mock_block]
+        })
 
         with patch("agents.classify_bot.openai.OpenAI") as mock_client_class:
-            mock_client_class.return_value.messages.create.return_value = mock_response
+            mock_client_class.return_value.chat.completions.create.return_value = mock_response
             result = classify_system(sample_ai_system_description)
 
         assert result.get("risk_tier") == "HIGH_RISK"
+        assert "legal_basis" in result, "Result must include legal_basis"
 
     def test_fraud_system_exemption_handling(self, sample_fraud_system_description):
         """Fraud-only system should not be HIGH_RISK (Recital 58 exemption)."""
         from agents.classify_bot import classify_system
 
-        expected_payload = {
+        mock_response = self._make_response({
             "risk_tier": "MINIMAL_RISK",
             "legal_basis": "Recital 58 — Fraud detection exemption",
             "confidence": 0.90,
-        }
-        mock_block = MagicMock()
-        mock_block.type = "text"
-        mock_block.text = json.dumps(expected_payload)
-        mock_response = MagicMock()
-        mock_message = MagicMock(); message.tool_calls = None; message.content = json.dumps(payload); choice = MagicMock(); choice.finish_reason = "stop"; choice.message = message; mock_response.choices = [choice]
-        mock_response.content = [mock_block]
+        })
 
         with patch("agents.classify_bot.openai.OpenAI") as mock_client_class:
-            mock_client_class.return_value.messages.create.return_value = mock_response
+            mock_client_class.return_value.chat.completions.create.return_value = mock_response
             result = classify_system(sample_fraud_system_description)
 
         assert result.get("risk_tier") != "HIGH_RISK", \
             "Fraud-only systems should not be classified as HIGH_RISK (Recital 58)"
+        assert result.get("risk_tier") == "MINIMAL_RISK"
 
 
 # ─── Internal helper tests ────────────────────────────────────────────────────

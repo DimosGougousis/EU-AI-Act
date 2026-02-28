@@ -40,14 +40,15 @@ class TestConformityBotToolSchemas:
         with open(SCHEMAS_DIR / "conformity_tools.json") as f:
             tools = json.load(f)
         for tool in tools:
-            assert "name" in tool
-            assert "description" in tool
-            assert "input_schema" in tool
+            assert tool.get("type") == "function", "Tool must have type 'function' (OpenAI format)"
+            fn = tool.get("function", {})
+            for key in ("name", "description", "parameters"):
+                assert key in fn, f"tool['function'] missing key '{key}'"
 
     def test_expected_tools_present(self):
         with open(SCHEMAS_DIR / "conformity_tools.json") as f:
             tools = json.load(f)
-        names = {t["name"] for t in tools}
+        names = {t["function"]["name"] for t in tools}
         expected = {
             "check_document_exists",
             "check_log_retention",
@@ -58,9 +59,11 @@ class TestConformityBotToolSchemas:
     def test_document_type_enum_covers_key_docs(self):
         with open(SCHEMAS_DIR / "conformity_tools.json") as f:
             tools = json.load(f)
-        check_tool = next(t for t in tools if t["name"] == "check_document_exists")
+        check_tool = next(
+            t for t in tools if t["function"]["name"] == "check_document_exists"
+        )
         doc_type_enum = (
-            check_tool["input_schema"]["properties"]["document_type"].get("enum", [])
+            check_tool["function"]["parameters"]["properties"]["document_type"].get("enum", [])
         )
         for doc in ["risk_management_system", "technical_documentation", "fria"]:
             assert doc in doc_type_enum, f"'{doc}' missing from document_type enum"
@@ -92,34 +95,38 @@ class TestObligationsChecklist:
 
 class TestRunConformityCheck:
 
+    def _make_response(self, payload: dict):
+        mock_message = MagicMock()
+        mock_message.tool_calls = None
+        mock_message.content = json.dumps(payload)
+        mock_choice = MagicMock()
+        mock_choice.finish_reason = "stop"
+        mock_choice.message = mock_message
+        mock_response = MagicMock()
+        mock_response.choices = [mock_choice]
+        return mock_response
+
     def test_returns_dict(self):
         from agents.conformity_bot import run_conformity_check
 
-        payload = {
+        mock_response = self._make_response({
             "status": "REPORT_GENERATED",
             "overall_score": 15.0,
             "ncr_count": 4,
-            "ncrs": [
-                {"id": "NCR-001", "article": "Art. 12", "status": "FAIL"},
-            ],
-        }
-        mock_block = MagicMock()
-        mock_block.type = "text"
-        mock_block.text = json.dumps(payload)
-        mock_response = MagicMock()
-        mock_message = MagicMock(); message.tool_calls = None; message.content = json.dumps(payload); choice = MagicMock(); choice.finish_reason = "stop"; choice.message = message; mock_response.choices = [choice]
-        mock_response.content = [mock_block]
+            "ncrs": [{"id": "NCR-001", "article": "Art. 12", "status": "FAIL"}],
+        })
 
         with patch("agents.conformity_bot.openai.OpenAI") as mock_client_class:
-            mock_client_class.return_value.messages.create.return_value = mock_response
+            mock_client_class.return_value.chat.completions.create.return_value = mock_response
             result = run_conformity_check()
 
         assert isinstance(result, dict)
+        assert result.get("status") == "REPORT_GENERATED"
 
     def test_ncr_count_reflects_gaps(self):
         from agents.conformity_bot import run_conformity_check
 
-        payload = {
+        mock_response = self._make_response({
             "status": "REPORT_GENERATED",
             "overall_score": 15.0,
             "ncr_count": 4,
@@ -129,19 +136,14 @@ class TestRunConformityCheck:
                 {"id": "NCR-003", "article": "Art. 15", "obligation": "Robustness testing", "status": "FAIL"},
                 {"id": "NCR-004", "article": "Art. 14", "obligation": "HITL deployed", "status": "FAIL"},
             ],
-        }
-        mock_block = MagicMock()
-        mock_block.type = "text"
-        mock_block.text = json.dumps(payload)
-        mock_response = MagicMock()
-        mock_message = MagicMock(); message.tool_calls = None; message.content = json.dumps(payload); choice = MagicMock(); choice.finish_reason = "stop"; choice.message = message; mock_response.choices = [choice]
-        mock_response.content = [mock_block]
+        })
 
         with patch("agents.conformity_bot.openai.OpenAI") as mock_client_class:
-            mock_client_class.return_value.messages.create.return_value = mock_response
+            mock_client_class.return_value.chat.completions.create.return_value = mock_response
             result = run_conformity_check()
 
         assert result.get("ncr_count") == 4, "Feb 2026 baseline should have 4 NCRs"
+        assert result.get("overall_score") == 15.0, "Feb 2026 baseline score must be 15%"
 
 
 # ─── Tool handler tests (no API) ─────────────────────────────────────────────
