@@ -169,6 +169,39 @@
   </div>
 
   <div class="section">
+    <h2>3a. Residual Risk Justification — Highest-Scored Items</h2>
+    <p class="section-intro">The following justifications document <em>why</em> the mitigations for the three highest inherent-risk items are judged sufficient to reduce residual risk to an acceptable level. Included to support CRO sign-off (Art. 9(5)) and to address auditor scrutiny of the residual score reductions.</p>
+
+    <h3>R-01: Proxy Discrimination via Geographic Features (Inherent 16 → Residual 6)</h3>
+    <p>The residual probability is rated 2 (Unlikely) post-mitigation for the following reasons:</p>
+    <ul>
+      <li><strong>Root-cause removal:</strong> Postcode was identified as the primary proxy variable for ethnicity in the v2.0 bias audit. Its removal from the feature set in v2.1 eliminates the direct pathway for geographic proxy discrimination — this is the highest-confidence single mitigation available.</li>
+      <li><strong>Ongoing detection:</strong> BiasWatchAgent computes demographic parity difference weekly across gender, age, and nationality. The threshold of 0.05 (5%) is tighter than the ECOA/fair lending standard of 0.10, providing early-warning detection before a breach becomes severe.</li>
+      <li><strong>Residual pathway acknowledged:</strong> Some postcode signal may persist via correlated features (income category, employment sector). The residual severity is rated 3 (Moderate) rather than 1 to reflect this remaining pathway. This is explicitly monitored via the weekly DPD metric.</li>
+      <li><strong>Acceptance condition:</strong> Residual risk is accepted on the condition that the weekly monitoring remains operational and that any DPD breach above 0.05 triggers the corrective action defined in Section 4. If BiasWatchAgent is offline for more than 2 consecutive weeks, risk status reverts to UNACCEPTABLE until restored.</li>
+    </ul>
+
+    <h3>R-02: Systematic Disadvantage for Thin-File Applicants (Inherent 12 → Residual 6)</h3>
+    <p>The residual probability is rated 2 (Unlikely) post-mitigation for the following reasons:</p>
+    <ul>
+      <li><strong>Routing mitigation:</strong> Any application with fewer than 3 months of PSD2 data or no BKR history is automatically routed to manual review, bypassing the automated scoring model entirely. This is a hard rule enforced at the application intake layer, not a model parameter — it cannot be miscalibrated out.</li>
+      <li><strong>Separate performance tracking:</strong> Thin-file segment model performance is tracked independently of the main population. If the thin-file default rate diverges from the predicted rate by more than 15%, an automatic review is triggered.</li>
+      <li><strong>Residual severity accepted at 3:</strong> Thin-file applicants still receive a slower, more manual process — this is an indirect disadvantage (speed, not outcome accuracy) that is not fully mitigated. Severity 3 (Moderate) reflects this. The CRO has reviewed and accepted this as a proportionate operational constraint given the genuine uncertainty in thin-file credit risk.</li>
+      <li><strong>Access to financial services:</strong> The FRIA (Artifact 10) rates <em>access_to_financial_services</em> residual risk as HIGH for thin-file applicants. This is consistent with Residual Risk score 6 here — "Yes — MONITOR" does not mean LOW risk; it means the risk is known, documented, and actively managed rather than suppressed or ignored.</li>
+    </ul>
+
+    <h3>R-07: Human Oversight Failure — Loan Officer Rubber-Stamping (Inherent 12 → Residual 6)</h3>
+    <p>The residual probability is rated 2 (Unlikely) post-mitigation for the following reasons:</p>
+    <ul>
+      <li><strong>Active confirmation design:</strong> The HITL dashboard (Artifact 09) requires loan officers to view and interact with the SHAP explanation before the "Confirm" button becomes active. This is a UI affordance enforced at the application layer — officers cannot confirm without seeing the explanation.</li>
+      <li><strong>Override logging with reason codes:</strong> All overrides are logged with a mandatory reason code from a constrained taxonomy. Reason codes are reviewed monthly by the Head of Credit Operations. A pattern of "no reason" overrides would be detectable within one reporting cycle.</li>
+      <li><strong>Training programme:</strong> The 4-hour AI literacy training is mandatory for all 15 loan officers before HITL dashboard access is granted. Training completion is a prerequisite in the HITL deployment gating checklist.</li>
+      <li><strong>Residual risk limitation:</strong> The primary residual risk is that loan officers may confirm decisions they do not fully understand, despite the training. The 40% override rate trigger (Section 4) is designed to surface this behaviour at a population level — but it will not catch individual instances. This is accepted as a proportionate constraint given that 100% independent human reassessment of all ~3,800 weekly decisions is operationally infeasible.</li>
+      <li><strong>Dependency note:</strong> This residual score of 6 is <em>conditional</em> on HITL being deployed in production (NCR-04). Until NCR-04 is closed, R-07 effective residual risk remains at the inherent score of 12.</li>
+    </ul>
+  </div>
+
+  <div class="section">
     <h2>4. Monitoring Triggers &amp; Review Cadence</h2>
     <div class="table-wrap">
       <table>
@@ -196,7 +229,7 @@
       <li><a href="08-data-governance.html">Data Governance</a></li>
     </ul></div>
   </div>
-  <div class="footer-bottom">EU AI Act Assessment Portfolio — FinPulse NL B.V. — February 2026 — Hypothetical Exercise</div>
+  <div class="footer-bottom">EU AI Act Assessment Portfolio — FinPulse NL B.V. — February 2026 — Programme Proposal</div>
 </footer>
 </body>
 </html>
