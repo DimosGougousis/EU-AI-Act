@@ -246,7 +246,7 @@ graph TD
 
 ---
 
-## Skills Demonstrated
+## Product Decisions
 
 | PM Competency | Evidence | Artifact |
 |---------------|----------|----------|
