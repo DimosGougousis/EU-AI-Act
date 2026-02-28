@@ -1,0 +1,91 @@
+[
+  {
+    "name": "assess_fundamental_right",
+    "description": "Assess the impact of the AI system on a specific fundamental right under the EU Charter of Fundamental Rights (EUCFR).",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "right": {
+          "type": "string",
+          "enum": [
+            "non_discrimination",
+            "privacy_data_protection",
+            "access_to_financial_services",
+            "right_to_explanation",
+            "human_dignity",
+            "freedom_from_manipulation"
+          ]
+        },
+        "legal_basis": {
+          "type": "string",
+          "description": "Relevant EUCFR article, GDPR article, or national law"
+        },
+        "system_description": {
+          "type": "object",
+          "description": "AI system being assessed"
+        },
+        "affected_population": {
+          "type": "string",
+          "description": "Description of the affected population"
+        }
+      },
+      "required": ["right", "legal_basis", "system_description", "affected_population"]
+    }
+  },
+  {
+    "name": "propose_mitigation_measures",
+    "description": "Propose proportionate mitigation measures for an identified fundamental rights impact.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "right": {"type": "string"},
+        "impact_description": {"type": "string"},
+        "likelihood": {
+          "type": "string",
+          "enum": ["LOW", "MEDIUM", "HIGH"]
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+        }
+      },
+      "required": ["right", "impact_description", "likelihood", "severity"]
+    }
+  },
+  {
+    "name": "cross_reference_dpia",
+    "description": "Cross-reference FRIA findings with an existing GDPR DPIA for the same system.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "dpia_reference": {
+          "type": "string",
+          "description": "GDPR DPIA reference number (e.g. DPIA-2025-003)"
+        },
+        "fria_findings": {
+          "type": "array",
+          "items": {"type": "object"},
+          "description": "FRIA findings from assess_fundamental_right calls"
+        }
+      },
+      "required": ["dpia_reference", "fria_findings"]
+    }
+  },
+  {
+    "name": "generate_fria_report",
+    "description": "Generate the complete structured FRIA document with all rights assessments, mitigations, residual risks, and sign-off requirements.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "system_name": {"type": "string"},
+        "rights_assessments": {
+          "type": "array",
+          "items": {"type": "object"}
+        },
+        "dpia_alignment": {"type": "object"},
+        "output_path": {"type": "string"}
+      },
+      "required": ["system_name", "rights_assessments"]
+    }
+  }
+]

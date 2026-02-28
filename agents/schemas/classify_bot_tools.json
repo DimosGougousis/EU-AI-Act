@@ -1,0 +1,76 @@
+[
+  {
+    "name": "check_annex_iii",
+    "description": "Check if AI system matches any Annex III high-risk category. Returns matching categories with exact citation from the EU AI Act.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "system_purpose": {
+          "type": "string",
+          "description": "Plain-language description of what the AI system does"
+        },
+        "deployment_context": {
+          "type": "string",
+          "description": "Sector and regulatory context (e.g. Consumer Credit Provider under Wft)"
+        }
+      },
+      "required": ["system_purpose", "deployment_context"]
+    }
+  },
+  {
+    "name": "check_fraud_exemption",
+    "description": "Evaluate Recital 58 fraud detection exemption criteria. Returns whether the exemption applies and the legal reasoning.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "sole_purpose_fraud": {
+          "type": "boolean",
+          "description": "Whether fraud/AML detection is the sole primary purpose of the system"
+        },
+        "outputs_used_for": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "List of use cases the AI output is used for beyond fraud detection"
+        }
+      },
+      "required": ["sole_purpose_fraud", "outputs_used_for"]
+    }
+  },
+  {
+    "name": "check_prohibited_practices",
+    "description": "Screen AI system description against Article 5 prohibited AI practices. Returns any matches for immediate escalation.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "system_description": {
+          "type": "string",
+          "description": "Full system description including inputs, outputs and decision role"
+        }
+      },
+      "required": ["system_description"]
+    }
+  },
+  {
+    "name": "generate_classification_report",
+    "description": "Generate final structured JSON classification report with risk tier, legal basis, obligations list, and recommended next steps.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "risk_tier": {
+          "type": "string",
+          "enum": ["PROHIBITED", "HIGH_RISK", "LIMITED_RISK", "MINIMAL_RISK"]
+        },
+        "legal_basis": {
+          "type": "string",
+          "description": "Specific article and annex citation"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": ["risk_tier", "legal_basis", "confidence"]
+    }
+  }
+]

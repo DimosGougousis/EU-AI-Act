@@ -1,0 +1,103 @@
+[
+  {
+    "name": "query_decision_log",
+    "description": "Query pseudonymised credit decision log for a date range. Returns approval/decline counts segmented by demographic group.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "start_date": {
+          "type": "string",
+          "description": "ISO 8601 date (YYYY-MM-DD)"
+        },
+        "end_date": {
+          "type": "string",
+          "description": "ISO 8601 date (YYYY-MM-DD)"
+        },
+        "include_demographics": {
+          "type": "boolean",
+          "description": "Whether to include pseudonymised demographic breakdown"
+        }
+      },
+      "required": ["start_date", "end_date"]
+    }
+  },
+  {
+    "name": "compute_fairness_metrics",
+    "description": "Compute demographic parity difference, equalized odds difference, and Population Stability Index (PSI) from decision data.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "object",
+          "description": "Decision log data as returned by query_decision_log"
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["demographic_parity", "equalized_odds", "psi", "approval_rate_by_region"]
+          },
+          "description": "List of fairness metrics to compute"
+        },
+        "protected_attributes": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Demographic attributes to analyse (e.g. gender, age_bracket, nationality)"
+        }
+      },
+      "required": ["data", "metrics"]
+    }
+  },
+  {
+    "name": "create_incident_ticket",
+    "description": "Create a compliance incident ticket when a fairness threshold is breached. Notifies Head of Data Science.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "severity": {
+          "type": "string",
+          "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW"]
+        },
+        "metric": {
+          "type": "string",
+          "description": "Name of the fairness metric that breached threshold"
+        },
+        "value": {
+          "type": "number",
+          "description": "Actual metric value observed"
+        },
+        "threshold": {
+          "type": "number",
+          "description": "Alert threshold that was breached"
+        },
+        "affected_group": {
+          "type": "string",
+          "description": "Demographic group with the breach"
+        }
+      },
+      "required": ["severity", "metric", "value", "threshold"]
+    }
+  },
+  {
+    "name": "publish_fairness_report",
+    "description": "Save weekly fairness monitoring report to compliance repository.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "report_data": {
+          "type": "object",
+          "description": "Structured fairness metrics report"
+        },
+        "week": {
+          "type": "string",
+          "description": "ISO week identifier (e.g. 2026-W09)"
+        },
+        "output_path": {
+          "type": "string",
+          "description": "Repository path for the report"
+        }
+      },
+      "required": ["report_data", "week"]
+    }
+  }
+]
